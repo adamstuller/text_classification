@@ -4,9 +4,7 @@ app = Flask(__name__)
 @app.route('/classification/predict', methods=['POST'])
 def predict():
     app.logger.info(request.get_json())
-    return {
-        "tag": "hoco"
-    }
+    return request.get_json()
 
 if __name__ == "__main__":
     app.config.from_object('config.DevelopmentConfig') 
