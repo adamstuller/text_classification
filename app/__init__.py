@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_json_schema import JsonSchema, JsonValidationError
 import os
-from config import config
+from app.config import config
 from logging.config import dictConfig
 from dotenv import load_dotenv
 from app.schemas import predict_schema
 from app.machine_learning.predict import predict_tag
 from joblib import load
 load_dotenv()
+
+print(config)
 
 dictConfig(config['logger'])
 
@@ -28,4 +30,5 @@ def predict():
     app.logger.info(data)
     return predict_tag(pipe, **data)
 
-app.config.from_object(os.environ['APP_SETTINGS'])
+
+app.config.from_object(config['flask'][os.environ['FLASK_ENV']])

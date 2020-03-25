@@ -25,6 +25,13 @@ class DevelopmentConfig(BaseConfig):
 
 
 config = {
+    'flask': {
+        'development': 'app.config.DevelopmentConfig',
+        'staging': 'app.config.StagingConfig',
+        "production": "app.config.ProductionConfig",
+        "default": "app.config.DevelopmentConfig"
+
+    },
     'logger': {
         'version': 1,
         'formatters': {'default': {

@@ -1,5 +1,5 @@
 from joblib import load
-from config import config
+from app.config import config
 from os import path
 import argparse
 import pandas as pd

@@ -3,7 +3,7 @@ from sklearn.pipeline import Pipeline
 import pandas as pd
 from joblib import dump, load
 from os import path
-from config import config
+from app.config import config
 from sklearn.ensemble import RandomForestClassifier
 from datetime import date
 
