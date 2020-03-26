@@ -1,4 +1,4 @@
-from preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
+from app.preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
 from sklearn.pipeline import Pipeline
 import pandas as pd
 from joblib import dump, load
@@ -8,15 +8,19 @@ from sklearn.ensemble import RandomForestClassifier
 from datetime import date
 
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("--dataset-path", "-dp", dest="dataset_path",
-                    default=path.join(config['path_to_datasets'], f'banks.csv'))
 
 
-def get_data(data=None):
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset-path", "-dp", dest="dataset_path",
+                        default=path.join(config['path_to_datasets'], f'banks.csv'))
+    return parser.parse_args()
+
+
+def get_data(data=None, path_to_dataset=path.join(config['path_to_datasets'], 'banks.csv')):
     if data == None:
-        banks = pd.read_csv(parser.args.path_to_datasets, names=['class', 'sentence', 'likes',
-                                                                 'sentiment_percentage', 'post_id', 'posted_by_bank', 'parent_class'])
+        banks = pd.read_csv(path_to_dataset, names=['class', 'sentence', 'likes',
+                                                    'sentiment_percentage', 'post_id', 'posted_by_bank', 'parent_class'])
         banks = banks[banks.sentence.notna()]
         banks['class'] = banks['class'].apply(
             lambda x: x if x != 'Problémy s produktov' else 'Problémy s produktom')
@@ -24,11 +28,10 @@ def get_data(data=None):
         banks.index = range(len(banks))
     else:
         banks = data
-    return banks
+    return banks.head(20)
 
 
-if __name__ == "__main__":
-
+def train_pipeline(path_to_dataset):
     pipe = Pipeline(
         steps=[
             ('nlp4sk', NLP4SKPreprocesser('sentence')),
@@ -39,8 +42,13 @@ if __name__ == "__main__":
         ],
         verbose=True
     )
-    print('fitting')
     pipe.fit(get_data().drop(
-        columns=['class']), get_data()['class'])
+        columns=['class']), get_data(data=None, path_to_dataset=path_to_dataset)['class'])
     dump(pipe, path.join(config['path_to_models'],
                          f"pipeline-{str(date.today())}.joblib"))
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    print(args)
+    train_pipeline(args.dataset_path)

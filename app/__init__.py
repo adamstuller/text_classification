@@ -4,12 +4,11 @@ import os
 from app.config import config
 from logging.config import dictConfig
 from dotenv import load_dotenv
-from app.schemas import predict_schema
-from app.machine_learning.predict import predict_tag
+from app.schemas import predict_schema, train_schema
+from app.predict import predict_tag
+from app.train import train_pipeline
 from joblib import load
 load_dotenv()
-
-print(config)
 
 dictConfig(config['logger'])
 
@@ -29,6 +28,13 @@ def predict():
     data = request.get_json()
     app.logger.info(data)
     return predict_tag(pipe, **data)
+
+
+@app.route('/api/v1/classification/train', methods=['POST'])
+@schema.validate(train_schema)
+def train():
+    train_pipeline()
+    return (200)
 
 
 app.config.from_object(config['flask'][os.environ['FLASK_ENV']])
