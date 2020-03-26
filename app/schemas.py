@@ -17,3 +17,5 @@ predict_schema = {
         }
     }
 }
+
+train_schema = {}

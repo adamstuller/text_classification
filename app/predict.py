@@ -15,13 +15,16 @@ def predict_tag(pipeline, sentence: str, likes: int, sentiment_percentage: float
         'posted_by_bank': [posted_by_bank],
         'parent_class': [parent_class]
     })
-    return pipeline.predict(df)
+    
+    return {
+        'prediction': pipeline.predict(df)[0]
+    }
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pipeline-path", "-pp", dest="pipeline_path",
-                        default=path.join(config['path_to_models'], f'pipeline-2020-03-05.joblib'))
+                        default=path.join(config['path_to_models'], f'pipeline-2020-03-26.joblib'))
     parser.add_argument("--sentence", "-s", dest="sentence")
     parser.add_argument("--likes", "-l", dest="likes", type=int)
     parser.add_argument("--sentiment-percentage", "-sp",
@@ -37,14 +40,6 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     pipe = load(args.pipeline_path)
-    requested_data = {
-        'sentence': [args.sentence],
-        'likes': [args.likes],
-        'sentiment_percentage': [args.sentiment_percentage],
-        'post_id': [args.post_id],
-        'posted_by_bank': [args.posted_by_bank],
-        'parent_class': [args.parent_class]
-    }
-    df = pd.DataFrame.from_dict(requested_data)
-    print(pipe.predict(df))
-    sys.stdout.flush()
+    predicted = predict_tag(pipe, args.sentence, args.likes, args.sentiment_percentage,
+                            args.post_id, args.posted_by_bank, args.parent_class)
+    print(predicted)

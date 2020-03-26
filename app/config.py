@@ -34,9 +34,11 @@ config = {
     },
     'logger': {
         'version': 1,
-        'formatters': {'default': {
-            'format': '{"timestamp":"%(asctime)s","level":"%(levelname)s","module":"%(module)s","message":"%(message)s"}',
-        }},
+        'formatters': {
+            'default': {
+                'format': '{"timestamp":"%(asctime)s","level":"%(levelname)s","module":"%(module)s","message":"%(message)s"}',
+            }
+        },
         'handlers': {'wsgi': {
             'class': 'logging.StreamHandler',
             'stream': 'ext://flask.logging.wsgi_errors_stream',
@@ -47,9 +49,10 @@ config = {
             'handlers': ['wsgi']
         }
     },
-    "path_to_models": path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'models'),
-    "path_to_datasets": path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'datasets'),
+    "path_to_models": path.join(path.dirname(path.realpath(__file__)), 'data', 'models'),
+    "path_to_datasets": path.join(path.dirname(path.realpath(__file__)), 'data', 'datasets'),
     "classes": ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
                 'Cena produktov / benefity', 'Problémy s produktom', 'Odpovede',
-                'Produkt', 'Otázky', 'Pobočka']
+                'Produkt', 'Otázky', 'Pobočka'],
+    'pipeline': 'pipeline-2020-03-26.joblib'
 }
