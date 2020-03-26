@@ -7,13 +7,15 @@ from dotenv import load_dotenv
 from app.schemas import predict_schema, train_schema
 from app.predict import predict_tag
 from app.train import train_pipeline
-from joblib import load
+import joblib
 load_dotenv()
 
 dictConfig(config['logger'])
 
 app = Flask(__name__)
 schema = JsonSchema(app)
+
+pipe = joblib.load(os.path.join(config['path_to_models'], config['pipeline']))
 
 
 @app.errorhandler(JsonValidationError)
@@ -27,7 +29,9 @@ def validation_error(e):
 def predict():
     data = request.get_json()
     app.logger.info(data)
-    return predict_tag(pipe, **data)
+    prediction = predict_tag(pipe, **data)
+    app.logger.info(prediction)
+    return prediction
 
 
 @app.route('/api/v1/classification/train', methods=['POST'])

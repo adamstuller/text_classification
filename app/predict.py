@@ -15,7 +15,10 @@ def predict_tag(pipeline, sentence: str, likes: int, sentiment_percentage: float
         'posted_by_bank': [posted_by_bank],
         'parent_class': [parent_class]
     })
-    return pipeline.predict(df)
+    
+    return {
+        'prediction': pipeline.predict(df)[0]
+    }
 
 
 def parse_arguments():
