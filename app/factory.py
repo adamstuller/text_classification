@@ -3,6 +3,9 @@ import os
 from app.celery_utils import init_celery
 from logging.config import dictConfig
 from app.config import config
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 PKG_NAME = os.path.dirname(os.path.realpath(__file__)).split("/")[-1]

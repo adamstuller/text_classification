@@ -28,8 +28,19 @@ def process_pipeline_endpoint():
             'message': 'pipelines got successfully',
             'payload': get_all('pipeline')
         }
-    else:
-        return {'message': 'ahoj'}
+    elif request.method == 'POST':
+        data = request.get_json()
+        current_app.logger.info(data)
+        dataset_name = data['dataset_name']
+        pipeline_name = data['pipeline_name']
+        train_pipeline_task.delay(
+            dataset_name=dataset_name,
+            pipeline_name=pipeline_name
+        )
+        return {
+            'message': f'training new pipeline',
+            'payload': data
+        }
 
 
 @machine_learning_bp.route('/api/v1/classification/training/dataset', methods=['GET'])
