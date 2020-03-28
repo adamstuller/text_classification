@@ -49,10 +49,11 @@ config = {
             'handlers': ['wsgi']
         }
     },
-    "path_to_models": path.join(path.dirname(path.realpath(__file__)), 'data', 'models'),
-    "path_to_datasets": path.join(path.dirname(path.realpath(__file__)), 'data', 'datasets'),
+    "path_to_models": path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'models'),
+    "path_to_datasets": path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'datasets'),
+    'path_to_banks_dataset': path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'datasets', 'banks.csv'),
     "classes": ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
                 'Cena produktov / benefity', 'Problémy s produktom', 'Odpovede',
                 'Produkt', 'Otázky', 'Pobočka'],
-    'pipeline': 'pipeline-2020-03-26.joblib'
+    'pipeline': 'pipeline-2020-03-28.joblib'
 }
