@@ -1,7 +1,6 @@
 from app import celery
-from app.train import train_pipeline
+from app.machine_learning.train import train_pipeline
 
 @celery.task()
-def make_file(fname, content):
-    with open(fname, "w") as f:
-        f.write(content)
+def train_pipeline_task(dataset_name, pipeline_name):
+    train_pipeline(dataset_name, pipeline_name)
