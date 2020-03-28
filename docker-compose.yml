@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  text-classification:
+    container_name: text-classification
+    image: adamstuller/text-classification-flask:1.0
+    networks:
+      - shared
+    volumes:
+      - ./:/app
+    environment:
+      FLASK_ENV: "development"
+    ports:
+      - "5000:5000"
+    command: ["python", "-m", "run"]
+
+  redis:
+    container_name: redis
+    image: redis:4.0.11-alpine
+    networks:
+      - shared
+    restart: always
+    init: true
+    stop_grace_period: 30s
+
+networks:
+  shared:
+    name: shared-network
