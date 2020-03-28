@@ -1,4 +1,4 @@
-from app.preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
+from app.machine_learning.preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
 from sklearn.pipeline import Pipeline
 import pandas as pd
 from joblib import dump, load
@@ -15,7 +15,7 @@ import argparse
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset-path", "-dp", dest="dataset_path",
-                        default=path.join(config['path_to_datasets'], f'banks.csv'))
+                        default=path.join(config['path_to_datasets'], f'banks'))
     return parser.parse_args()
 
 
@@ -45,8 +45,8 @@ def train_pipeline(dataset_name='banks', pipeline_name=None):
 
     if not isfile(path_to_dataset):
         raise FileNotFoundError(
-            'Dataset stated in dataset_name does not exists'
-            )
+            f'Dataset {dataset_name}.csv does not exists'
+        )
 
     pipe = Pipeline(
         steps=[
@@ -97,6 +97,6 @@ def get_all(folder_type):
 
 
 if __name__ == "__main__":
-    # args = parse_arguments()
-    print(get_all('pipelines'))
-    # train_pipeline(args.dataset_path)
+    args = parse_arguments()
+    # print(get_all('pipeline'))
+    train_pipeline(args.dataset_path)
