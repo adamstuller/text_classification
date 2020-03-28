@@ -20,6 +20,8 @@ def predict_tag(pipeline, sentence: str, likes: int, sentiment_percentage: float
         'prediction': pipeline.predict(df)[0]
     }
 
+    
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
