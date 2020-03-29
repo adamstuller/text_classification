@@ -4,6 +4,9 @@ from os import path
 import argparse
 import pandas as pd
 import sys
+from app.machine_learning.preprocessing import NLP4SKPreprocesser
+
+nlp4sk_preprocesser = NLP4SKPreprocesser('sentence')
 
 
 def predict_tag(pipeline, sentence: str, likes: int, sentiment_percentage: float, post_id: int, posted_by_bank: int, parent_class: str):
@@ -15,12 +18,8 @@ def predict_tag(pipeline, sentence: str, likes: int, sentiment_percentage: float
         'posted_by_bank': [posted_by_bank],
         'parent_class': [parent_class]
     })
-    
-    return {
-        'prediction': pipeline.predict(df)[0]
-    }
-
-    
+    updated_df = nlp4sk_preprocesser.transform(df)
+    return pipeline.predict(updated_df)[0]
 
 
 def parse_arguments():

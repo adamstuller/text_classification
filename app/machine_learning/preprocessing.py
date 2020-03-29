@@ -268,7 +268,7 @@ class TFIDFTransformer():
                         .rename(columns=lambda x: self.tfidf.get_feature_names()[x])
         x.index = transformed.index
         return x.merge(transformed, left_index=True, right_index=True)\
-            .drop(columns=[self.sentence_column])
+            .drop(columns=[self.sentence_column], errors='ignore')
 
 
 class LDATransformer():

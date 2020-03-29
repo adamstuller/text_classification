@@ -17,7 +17,10 @@ def predict():
     current_app.logger.info(data)
     prediction = predict_tag(pipe, **data)
     current_app.logger.info(prediction)
-    return prediction
+    return {
+        'message': 'predicted successfully',
+        'payload': prediction
+    }
 
 
 @machine_learning_bp.route('/api/v1/classification/training/pipeline', methods=['POST', 'GET'])

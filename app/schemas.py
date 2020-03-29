@@ -18,4 +18,9 @@ predict_schema = {
     }
 }
 
-train_schema = {}
+train_schema = {
+    'properties': {
+        'pipeline': { 'type': 'string' },
+        'dataset': { 'type': 'string' }
+    }
+}
