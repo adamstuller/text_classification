@@ -34,6 +34,7 @@ services:
     container_name: celery-worker
     environment:
       REDIS_URL: 'redis'
+      FLASK_ENV: "development"
     volumes:
       - ./:/app
     image: adamstuller/text-classification-flask:1.1
