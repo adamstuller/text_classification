@@ -48,11 +48,9 @@ def process_pipeline_endpoint():
         validate(instance=data, schema=train_schema)
 
         current_app.logger.info(data)
-        dataset_name = data['dataset_name']
         pipeline_name = data['pipeline_name']
         
         train_pipeline_task.delay(
-            dataset_name=dataset_name,
             pipeline_name=pipeline_name
         )
         return {
