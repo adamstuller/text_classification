@@ -1,18 +1,18 @@
 version: "3.7"
 
 services:
-  # text-classification:
-  #   container_name: text-classification
-  #   image: adamstuller/text-classification-flask:1.0
-  #   networks:
-  #     - shared
-  #   volumes:
-  #     - ./:/app
-  #   environment:
-  #     FLASK_ENV: "development"
-  #   ports:
-  #     - "5000:5000"
-  #   command: ["python", "-m", "run"]
+  text-classification:
+    container_name: text-classification
+    image: adamstuller/text-classification-flask:1.1
+    networks:
+      - shared
+    volumes:
+      - ./:/app
+    environment:
+      FLASK_ENV: "development"
+    ports:
+      - "5000:5000"
+    command: ["python", "-m", "app"]
 
   redis:
     container_name: redis
@@ -24,6 +24,19 @@ services:
     restart: always
     init: true
     stop_grace_period: 30s
+
+  # celery:
+  #   depends_on: 
+  #     - redis
+  #   container_name: celery-worker
+  #   environment:
+  #     REDIS_URL: 'redis'
+  #   volumes:
+  #     - ./:/app
+  #   image: adamstuller/text-classification-flask:1.1
+  #   command: celery -A celery_worker.celery worker -l INFO
+  #   networks: 
+  #     - shared
 
 networks:
   shared:

@@ -1,4 +1,4 @@
-from os import path
+from os import path, getenv
 
 
 class BaseConfig(object):
@@ -30,7 +30,6 @@ config = {
         'staging': 'app.config.StagingConfig',
         "production": "app.config.ProductionConfig",
         "default": "app.config.DevelopmentConfig"
-
     },
     'logger': {
         'version': 1,
@@ -55,5 +54,6 @@ config = {
     "classes": ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
                 'Cena produktov / benefity', 'Problémy s produktom', 'Odpovede',
                 'Produkt', 'Otázky', 'Pobočka'],
-    'pipeline': 'pipeline-2020-03-28.joblib'
+    'pipeline': 'pipeline-2020-03-28.joblib',
+    'redis_url': getenv('REDIS_URL', 'localhost')
 }

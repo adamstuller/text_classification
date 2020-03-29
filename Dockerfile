@@ -1,6 +1,8 @@
 FROM python
 
-COPY ./ /app
+RUN mkdir app
+
+COPY ./requirements.txt /app
 
 WORKDIR /app
 
