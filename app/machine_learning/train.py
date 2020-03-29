@@ -57,7 +57,7 @@ def get_data(data=None, dataset_name=DEFAULT_DATASET, head_n=None, preprocess=No
     return banks if head_n == None else banks.head(head_n)
 
 
-def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_BANKS_COLUMNS, preprocess=None, pipeline_name=None, head_n=None):
+def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_BANKS_COLUMNS, preprocess=preprocess_updated_banks, pipeline_name=None, head_n=None):
 
     print(dataset_name)
     path_to_pipeline = path.join(

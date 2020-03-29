@@ -19,8 +19,9 @@ predict_schema = {
 }
 
 train_schema = {
+    'type': 'object',
     'properties': {
-        'pipeline': { 'type': 'string' },
-        'dataset': { 'type': 'string' }
-    }
+        'pipeline_name': {'type': 'string'},
+    },
+    "additionalProperties": False
 }
