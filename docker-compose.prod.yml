@@ -1,0 +1,62 @@
+version: "3.7"
+
+services:
+  text-classification:
+    container_name: text-classification
+    depends_on: 
+      - redis
+    image: adamstuller/text-classification-flask:1.3
+    build: .
+    networks:
+      - shared
+    volumes:
+      - ./:/app
+    environment:
+      FLASK_ENV: "production"
+      REDIS_URL: 'redis'
+      FLASK_PORT: 8000
+    ports:
+      - "5000:5000"
+    command: [ "uwsgi", "app.ini" ]
+
+  redis:
+    container_name: redis
+    image: redis:4.0.11-alpine
+    networks:
+      - shared
+    ports:  
+      - "6379:6379"
+    restart: always
+    init: true
+    stop_grace_period: 30s
+
+  celery:
+    depends_on: 
+      - redis
+    container_name: celery-worker
+    environment:
+      REDIS_URL: 'redis'
+      FLASK_ENV: "production"
+    volumes:
+      - ./:/app
+    image: adamstuller/text-classification-flask:1.3
+    build: .
+    command: celery -A celery_worker.celery worker -l INFO
+    networks: 
+      - shared
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    depends_on: 
+      - text-classification
+    networks: 
+      - shared
+    restart: always
+    ports:
+      - "80:80"
+
+
+networks:
+  shared:
+    name: shared-network
