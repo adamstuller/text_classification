@@ -7,7 +7,7 @@ from os.path import isfile, splitext
 from app.config import config
 from sklearn.ensemble import RandomForestClassifier
 from datetime import date
-from app.constants import DATASET_ARG, PIPELINE_ARG, DEFAULT_DATASET, BANKS_COLUMNS, UPDATED_BANKS_COLUMNS
+from app.constants import DATASET_ARG, PIPELINE_ARG, DEFAULT_DATASET, COLUMN_NAMES, UPDATED_COLUMN_NAMES, BANKS, PEPCO, PARENT_CLASS_COLUMN_NAME, UPDATED_SENTENCE_COLUMN_NAME
 
 import argparse
 
@@ -15,7 +15,7 @@ import argparse
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset-path", "-dp", dest="dataset_path",
-                        default=path.join(config['path_to_datasets'], f'{DEFAULT_DATASET}'))
+                        default=path.join(config['path_to_datasets'][BANKS], f'{DEFAULT_DATASET}'))
     return parser.parse_args()
 
 
@@ -28,14 +28,14 @@ def preprocess_banks(banks: pd.DataFrame):
     return banks
 
 
-def preprocess_updated_banks(updated_banks: pd.DataFrame):
-    return updated_banks[updated_banks.updated_sentence.notna()]
+def preprocess_updated_df(updated_df: pd.DataFrame):
+    return updated_df[updated_df[UPDATED_SENTENCE_COLUMN_NAME].notna()]
 
 
-def get_data(data=None, dataset_name=DEFAULT_DATASET, head_n=None, preprocess=None, column_names=UPDATED_BANKS_COLUMNS):
+def get_data(data=None, dataset_name=DEFAULT_DATASET, head_n=None, preprocess=None, column_names=UPDATED_COLUMN_NAMES, topic_type=BANKS):
 
     path_to_dataset = path.join(
-        config['path_to_datasets'],
+        config['path_to_datasets'][topic_type],
         f'{dataset_name}.csv'
     )
 
@@ -57,19 +57,18 @@ def get_data(data=None, dataset_name=DEFAULT_DATASET, head_n=None, preprocess=No
     return banks if head_n == None else banks.head(head_n)
 
 
-def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_BANKS_COLUMNS, preprocess=preprocess_updated_banks, pipeline_name=None, head_n=None):
+def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_COLUMN_NAMES, preprocess=preprocess_updated_df, pipeline_name=None, head_n=None, topic_type=BANKS):
 
     print(dataset_name)
     path_to_pipeline = path.join(
-        config['path_to_models'],
+        config['path_to_models'][topic_type],
         f'{pipeline_name}.joblib' if pipeline_name != None
         else f'pipeline-{str(date.today())}.joblib')
 
     pipe = Pipeline(
         steps=[
-            # ('nlp4sk', NLP4SKPreprocesser('sentence')),
-            ('tf-idf', TFIDFTransformer('updated_sentence')),
-            ('one-hot', OneHotTransformer(['parent_class'])),
+            ('tf-idf', TFIDFTransformer(UPDATED_SENTENCE_COLUMN_NAME)),
+            ('one-hot', OneHotTransformer([PARENT_CLASS_COLUMN_NAME])),
             ('random_forest', RandomForestClassifier(n_estimators=200,
                                                      max_depth=50,
                                                      criterion='gini',
@@ -79,12 +78,13 @@ def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_BANKS_COLU
         verbose=True
     )
 
-    X = get_data(head_n=head_n, dataset_name=dataset_name, column_names=column_names, preprocess=preprocess)\
+    X = get_data(head_n=head_n, dataset_name=dataset_name, column_names=column_names, preprocess=preprocess, topic_type=topic_type)\
         .drop(columns=['class'])
     Y = get_data(head_n=head_n,
                  dataset_name=dataset_name,
                  column_names=column_names,
-                 preprocess=preprocess
+                 preprocess=preprocess,
+                 topic_type=topic_type
                  )['class']
 
     pipe.fit(X, Y)
@@ -92,12 +92,17 @@ def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_BANKS_COLU
     dump(pipe, path_to_pipeline)
 
 
-def get_all(folder_type):
+def get_all(folder_type, topic_type=BANKS):
+
+    if not topic_type in [BANKS, PEPCO]:
+        raise KeyError(
+            f'topic_type argument is either "{BANKS}" or "{PEPCO}"'
+        )
 
     if folder_type == DATASET_ARG:
-        path_to_pipelines = config['path_to_datasets']
+        path_to_pipelines = config['path_to_datasets'][topic_type]
     elif folder_type == PIPELINE_ARG:
-        path_to_pipelines = config['path_to_models']
+        path_to_pipelines = config['path_to_models'][topic_type]
     else:
         raise KeyError(
             f'folder_type argument is either "{DATASET_ARG}" or "{PIPELINE_ARG}"'
@@ -117,17 +122,18 @@ def get_all(folder_type):
     )
 
 
-def nlp4sk_preprocess(data=None, input_dataset_name='banks', output_dataset_name='updated_banks',  head_n=None):
+def nlp4sk_preprocess(data=None, input_dataset_name='banks', output_dataset_name='updated_banks',  head_n=None, topic_type=BANKS, column_names=COLUMN_NAMES):
     if data == None:
         data = get_data(
             dataset_name=input_dataset_name,
             head_n=head_n,
             preprocess=preprocess_banks,
-            column_names=BANKS_COLUMNS
+            column_names=column_names,
+            topic_type=topic_type
         )
 
     path_to_output_dataset = path.join(
-        config['path_to_datasets'],
+        config['path_to_datasets'][topic_type],
         f'{output_dataset_name}.csv'
     )
 
@@ -139,5 +145,6 @@ def nlp4sk_preprocess(data=None, input_dataset_name='banks', output_dataset_name
 if __name__ == "__main__":
     args = parse_arguments()
     # print(get_all('pipeline'))
-    train_pipeline(preprocess=preprocess_updated_banks)
-    # nlp4sk_preprocess()
+    train_pipeline(preprocess=preprocess_updated_df, dataset_name='updated_pepco', topic_type=PEPCO)
+    # nlp4sk_preprocess(input_dataset_name='pepco',
+    #                   output_dataset_name='updated_pepco', topic_type=PEPCO)

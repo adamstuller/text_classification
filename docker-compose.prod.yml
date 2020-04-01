@@ -15,8 +15,6 @@ services:
       FLASK_ENV: "production"
       REDIS_URL: 'redis'
       FLASK_PORT: 8000
-    ports:
-      - "5000:5000"
     command: [ "uwsgi", "app.ini" ]
 
   redis:
@@ -24,8 +22,6 @@ services:
     image: redis:4.0.11-alpine
     networks:
       - shared
-    ports:  
-      - "6379:6379"
     restart: always
     init: true
     stop_grace_period: 30s

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl ec2-3-125-39-228.eu-central-1.compute.amazonaws.com/api/v1/classification/training/pipeline \
+curl localhost:5000/api/v1/classification/training/pipeline/pepco \
 -X POST  \
 -H "Content-Type:application/json" \
 -d '{

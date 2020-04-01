@@ -1,21 +1,48 @@
+from app.config import config
+from app.constants import BANKS, PEPCO, POSTED_BY_COLUMN_NAME, SENTENCE_COLUMN_NAME, SENTIMENT_PERCENTAGE_COLUMN_NAME, POST_ID_COLUMN_NAME, PARENT_CLASS_COLUMN_NAME, LIKES_COLUMN_NAME
+
 predict_schema = {
-    'required': ['sentence', 'likes', 'sentiment_percentage', 'post_id', 'posted_by_bank', 'parent_class'],
+    'required': [SENTENCE_COLUMN_NAME, LIKES_COLUMN_NAME, SENTIMENT_PERCENTAGE_COLUMN_NAME, POST_ID_COLUMN_NAME, POSTED_BY_COLUMN_NAME, 'topic'],
     'properties': {
-        'sentence': {'type': 'string'},
-        'likes': {'type': 'integer'},
-        'sentiment_percentage': {'type': 'number'},
-        'post_id': {'type': 'integer'},
-        'posted_by_bank': {
+        'topic':  {
+            'type':  'string',
+            'enum': config['available_topics'],
+            'default': BANKS
+        },
+        SENTENCE_COLUMN_NAME: {'type': 'string'},
+        LIKES_COLUMN_NAME: {'type': 'integer'},
+        SENTIMENT_PERCENTAGE_COLUMN_NAME: {'type': 'number'},
+        POST_ID_COLUMN_NAME: {'type': 'integer'},
+        POSTED_BY_COLUMN_NAME: {
             'type': 'integer',
             'enum': [0, 1],
-            'default': 0},
-        'parent_class': {
-            'type': 'string',
-            'enum': ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
-                     'Cena produktov / benefity', 'Problémy s produktom', 'Odpovede',
-                     'Produkt', 'Otázky', 'Pobočka']
+            'default': 0
         }
-    }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {"topic": {"const": BANKS}}
+            },
+            "then": {
+                "properties": {PARENT_CLASS_COLUMN_NAME: {
+                    'type': 'string',
+                    'enum': config['classes'][BANKS]
+                }}
+            }
+        },
+        {
+            "if": {
+                "properties": {"topic": {"const": PEPCO}}
+            },
+            "then": {
+                "properties": {PARENT_CLASS_COLUMN_NAME: {
+                    'type': 'string',
+                    'enum': config['classes'][PEPCO]
+                }}
+            }
+        }
+    ]
 }
 
 train_schema = {
