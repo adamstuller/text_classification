@@ -1,6 +1,6 @@
 from flask import Flask
 import os
-from app.celery_utils import init_celery
+from app.celery.celery_utils import init_celery
 from logging.config import dictConfig
 from app.config import config
 from dotenv import load_dotenv
