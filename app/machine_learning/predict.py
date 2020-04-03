@@ -1,11 +1,10 @@
 from joblib import load
-from app.config import config
+from app.config import config, BANKS, PEPCO, POSTED_BY_COLUMN_NAME, SENTENCE_COLUMN_NAME, SENTIMENT_PERCENTAGE_COLUMN_NAME, POST_ID_COLUMN_NAME, PARENT_CLASS_COLUMN_NAME, LIKES_COLUMN_NAME
 from os import path
 import argparse
 import pandas as pd
 import sys
 from app.machine_learning.preprocessing import NLP4SKPreprocesser
-from app.constants import BANKS, PEPCO, POSTED_BY_COLUMN_NAME, SENTENCE_COLUMN_NAME, SENTIMENT_PERCENTAGE_COLUMN_NAME, POST_ID_COLUMN_NAME, PARENT_CLASS_COLUMN_NAME, LIKES_COLUMN_NAME
 
 
 nlp4sk_preprocesser = NLP4SKPreprocesser('sentence')
@@ -32,7 +31,8 @@ def parse_arguments():
     parser.add_argument("--likes", "-l", dest=LIKES_COLUMN_NAME, type=int)
     parser.add_argument("--sentiment-percentage", "-sp",
                         dest=SENTIMENT_PERCENTAGE_COLUMN_NAME, type=float)
-    parser.add_argument("--post-id", "-pid", dest=POST_ID_COLUMN_NAME, type=int)
+    parser.add_argument("--post-id", "-pid",
+                        dest=POST_ID_COLUMN_NAME, type=int)
     parser.add_argument("--posted-by-bank", "-pbb",
                         dest=POSTED_BY_COLUMN_NAME, type=int, choices=[0, 1], default=0)
     parser.add_argument("--parent-class", "-pc",

@@ -4,10 +4,9 @@ import pandas as pd
 from joblib import dump, load
 from os import path, listdir
 from os.path import isfile, splitext
-from app.config import config
+from app.config import config, DATASET_ARG, PIPELINE_ARG, DEFAULT_DATASET, COLUMN_NAMES, UPDATED_COLUMN_NAMES, BANKS, PEPCO, PARENT_CLASS_COLUMN_NAME, UPDATED_SENTENCE_COLUMN_NAME
 from sklearn.ensemble import RandomForestClassifier
 from datetime import date
-from app.constants import DATASET_ARG, PIPELINE_ARG, DEFAULT_DATASET, COLUMN_NAMES, UPDATED_COLUMN_NAMES, BANKS, PEPCO, PARENT_CLASS_COLUMN_NAME, UPDATED_SENTENCE_COLUMN_NAME
 
 import argparse
 

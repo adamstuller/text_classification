@@ -1,7 +1,6 @@
 from app import celery
 from app.machine_learning.train import train_pipeline, nlp4sk_preprocess
-from app.constants import DEFAULT_DATASET
-from app.config import config
+from app.config import config,  DEFAULT_DATASET
 
 
 @celery.task()
