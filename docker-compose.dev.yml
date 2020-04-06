@@ -5,15 +5,15 @@ services:
     container_name: text-classification
     depends_on:
       - redis
-    image: adamstuller/text-classification-flask:1.3
-    build: .
+      - db
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
     networks:
       - shared
     volumes:
       - ./:/app
-    environment:
-      FLASK_ENV: "development"
-      REDIS_URL: "redis"
     ports:
       - "5000:5000"
     command: ["python", "-m", "app"]
@@ -23,8 +23,6 @@ services:
     image: redis:4.0.11-alpine
     networks:
       - shared
-    # ports:
-    #   - "6379:6379"
     restart: always
     init: true
     stop_grace_period: 30s
@@ -33,14 +31,27 @@ services:
     depends_on:
       - redis
     container_name: celery-worker
-    environment:
-      REDIS_URL: "redis"
-      FLASK_ENV: "development"
     volumes:
       - ./:/app
-    image: adamstuller/text-classification-flask:1.3
-    build: .
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
     command: celery -A celery_worker.celery worker -l INFO
+    networks:
+      - shared
+
+  db:
+    image: postgres
+    container_name: postgres_development
+    environment: 
+      POSTGRES_USER: "postgres_development"
+      POSTGRES_PASSWORD: "dbs_development"
+      POSTGRES_DB: "text_classification_development"
+    ports:
+      - 5432:5432
+    restart: always
+    init: true
     networks:
       - shared
 

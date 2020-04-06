@@ -1,29 +1,5 @@
 from os import path, getenv
-from app.constants import PEPCO, BANKS
-
-
-class BaseConfig(object):
-    'Base config class'
-    DEBUG = True
-    TESTING = False
-
-
-class ProductionConfig(BaseConfig):
-    'Production specific config'
-    DEBUG = False
-
-
-class StagingConfig(BaseConfig):
-    'Staging specific config'
-    DEBUG = True
-
-
-class DevelopmentConfig(BaseConfig):
-    'Development environment specific config'
-    DEBUG = True
-    TESTING = True
-    DEVELOPMENT = True
-
+from .constants import PEPCO, BANKS
 
 config = {
     'flask': {
@@ -50,13 +26,13 @@ config = {
         }
     },
     "path_to_models": {
-        BANKS: path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data',  'models', BANKS),
-        PEPCO: path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'models', PEPCO),
+        BANKS: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data',  'models', BANKS),
+        PEPCO: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data', 'models', PEPCO),
     },
     "path_to_datasets": {
-        BANKS: path.join(path.dirname(path.realpath(__file__)), 'machine_learning', 'data', 'datasets', BANKS),
+        BANKS: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data', 'datasets', BANKS),
         PEPCO: path.join(path.dirname(path.realpath(__file__)),
-                         'machine_learning', 'data', 'datasets', PEPCO)
+                        '..', 'machine_learning', 'data', 'datasets', PEPCO)
     },
     "classes": {
         BANKS: ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
@@ -75,5 +51,8 @@ config = {
         BANKS: 'updated_banks'
     },
     'redis_url': getenv('REDIS_URL', 'localhost'),
-    'available_topics': [BANKS,  PEPCO]
+    'available_topics': [BANKS,  PEPCO],
+    'database': {
+        'create_on_start': getenv('DATABASE__CREATE_ON_START', 'False') == 'True'
+    }
 }

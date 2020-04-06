@@ -2,11 +2,9 @@ from flask import Blueprint, request, jsonify, current_app, make_response
 import os
 from app.machine_learning.predict import predict_tag
 from app.machine_learning.train import get_all
-from app.tasks import train_pipeline_task
-from app.config import config
-from jsonschema import validate, ValidationError, SchemaError
-from app.schemas import predict_schema, train_schema
-from app.constants import BANKS, PEPCO
+from app.celery.tasks import train_pipeline_task
+from app.config import config, BANKS, PEPCO, predict_schema, train_schema
+from jsonschema import validate, ValidationError, SchemaError 
 import joblib
 
 
