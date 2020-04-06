@@ -20,9 +20,13 @@ def create_app(app_name=PKG_NAME, **kwargs):
 
     if kwargs.get("celery"):
         init_celery(kwargs.get("celery"), app)
+    
     from app.machine_learning import machine_learning_bp
     app.register_blueprint(machine_learning_bp)
-    models.init_app(app)
+
+    if kwargs.get('db') and kwargs.get('db') == True:
+        models.init_app(app)
+    
 
     @app.route('/')
     def check():

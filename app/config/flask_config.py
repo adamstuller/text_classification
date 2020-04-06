@@ -1,10 +1,9 @@
 from os import path, getenv
 
-DATABASE__USER = getenv('DATABASE__USER', 'postgres')
-DATABASE__PWD = getenv('DATABASE__PWD', 'dbs')
-DATABASE__HOST = getenv('DATABASE__HOST', 'localhost:5432')
-DATABASE__DBS = getenv('DATABASE_DBS', 'devdb')
-
+DATABASE__USER = getenv('DATABASE__USER')
+DATABASE__PWD = getenv('DATABASE__PWD')
+DATABASE__HOST = getenv('DATABASE__HOST')
+DATABASE__DBS = getenv('DATABASE__DBS')
 
 class BaseConfig(object):
     'Base config class'

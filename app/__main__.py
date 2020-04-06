@@ -5,7 +5,7 @@ import os
 from app.models import Document
 
 
-app = factory.create_app(celery=app.celery)
+app = factory.create_app(celery=app.celery, db=True)
 
 if __name__ == "__main__":
     app.logger.info('Creating db')
