@@ -52,3 +52,20 @@ train_schema = {
     },
     "additionalProperties": False
 }
+
+create_topic_schema = {
+    'properties': {
+        'name': {
+            'type': 'string'
+        },
+        'classes': {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        'mailto': {
+            'type': 'string'
+        }
+    }
+}

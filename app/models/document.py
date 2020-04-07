@@ -13,3 +13,6 @@ class Document(db.Model):
     tag_id = db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
     created_at = db.Column('created_at', db.DateTime)
     updated_at = db.Column('updated_at', db.DateTime)
+
+    def __repr__(self):
+        return '<Document %r>' % self.name
