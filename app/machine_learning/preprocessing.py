@@ -248,6 +248,71 @@ class NLP4SKPreprocesser():
             .drop(columns=[self.sentence_column])
 
 
+class NLP4SKSimplePreprocesser():
+
+    def __init__(self, sentence_column):
+        self.sentence_column = sentence_column
+
+    def __reconstruct_sentence(self, sentence, dll):
+        params = {
+            "text": sentence,
+            "apikey": "Stuller2020FIIT",
+            "textrestorer": "ProbabilisticDiacriticRestorer",
+        }
+        response = requests.post(
+            "http://arl6.library.sk/nlp4sk/api", data=params)
+        sleep(dll)
+        # reduce(lambda acc, x: acc + ' ' + x['word'], response.json(), '')
+        return " ".join(list(map(lambda x: x['word'], response.json())))
+
+    def __preprocess_sentence(self, sentence, dll):
+        params = {
+            "text": sentence,
+            "apikey": "Stuller2020FIIT",
+            "lemmatizer": "ProbabilisticLemmatizer",
+            "postagger": "ProbabilisticPOSTagger",
+            "tokenizer": "SmartRuleTokenizer"
+        }
+        response = requests.post(
+            "http://arl6.library.sk/nlp4sk/api", data=params)
+        sleep(dll)
+        return response.json()
+
+    def __transform_one(self, sentence):
+
+        try:
+            restored_sentence = self.__reconstruct_sentence(sentence, 1)
+            processed_comment = self.__preprocess_sentence(
+                restored_sentence, 1)
+
+            processed_sentence = []
+            for x in processed_comment:
+                if x['word'] == 'A' or x['word'] == '?':
+                    processed_sentence.append(x['word'])
+                elif x['lemma'][0] != '?' or x['word'] == '?':
+                    processed_sentence.append(x['lemma'][0])
+                else:
+                    processed_sentence.append(x['word'])
+
+            return ' '.join(filter(lambda x: x != None, processed_sentence))
+        except:
+            print('error')
+            return ''
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, l: list):
+        return reduce(
+            lambda acc, x: {
+                **acc,
+                **{x['id']: self.__transform_one(x[self.sentence_column])},
+            },
+            l,
+            {}
+        )
+
+
 class TFIDFTransformer():
 
     def __init__(self, sentence_column):

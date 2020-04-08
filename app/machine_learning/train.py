@@ -91,6 +91,25 @@ def train_pipeline(dataset_name=DEFAULT_DATASET, column_names=UPDATED_COLUMN_NAM
     dump(pipe, path_to_pipeline)
 
 
+def train_pipe(df: pd.DataFrame):
+    pipe = Pipeline(
+        steps=[
+            ('tf-idf', TFIDFTransformer(UPDATED_SENTENCE_COLUMN_NAME)),
+            ('one-hot', OneHotTransformer([PARENT_CLASS_COLUMN_NAME])),
+            ('random_forest', RandomForestClassifier(n_estimators=200,
+                                                     max_depth=50,
+                                                     criterion='gini',
+                                                     bootstrap=True,
+                                                     random_state=42))
+        ],
+        verbose=True
+    )
+    X = df.drop(columns=['tag'])
+    Y = df.tag
+
+    pipe.fit(X, Y)
+    return pipe
+
 def get_all(folder_type, topic_type=BANKS):
 
     if not topic_type in [BANKS, PEPCO]:

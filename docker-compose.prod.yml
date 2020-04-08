@@ -10,6 +10,8 @@ services:
       context: .
       dockerfile: ./Dockerfile
       target: prod
+      args: 
+        DATABASE__CREATE: "True"
     networks:
       - shared
     volumes:
@@ -35,6 +37,8 @@ services:
       context: .
       dockerfile: ./Dockerfile
       target: prod
+      args: 
+        DATABASE__CREATE: "False"
     command: celery -A celery_worker.celery worker -l INFO
     networks: 
       - shared

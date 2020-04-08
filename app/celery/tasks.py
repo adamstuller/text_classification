@@ -1,16 +1,127 @@
 from app import celery
-from app.machine_learning.train import train_pipeline, nlp4sk_preprocess
+from app.machine_learning.train import train_pipeline, nlp4sk_preprocess, train_pipe
 from app.config import config,  DEFAULT_DATASET
+import pandas as pd
+from app.models import Topic, Document, Tag, db
+from datetime import date
+from celery.utils.log import get_task_logger
+from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
+
+logger = get_task_logger(__name__)
 
 
 @celery.task()
-def train_pipeline_task( pipeline_name, topic_type):
-    train_pipeline( 
-        pipeline_name=pipeline_name, 
+def train_pipeline_task(pipeline_name, topic_type):
+    train_pipeline(
+        pipeline_name=pipeline_name,
         topic_type=topic_type,
         dataset_name=config['default_dataset'][topic_type]
-        )
+    )
+
 
 @celery.task()
 def nlp4sk_preprocess_task(input_dataset_name='banks', output_dataset_name=DEFAULT_DATASET):
-    nlp4sk_preprocess(input_dataset_name=input_dataset_name, output_dataset_name=output_dataset_name)
+    nlp4sk_preprocess(input_dataset_name=input_dataset_name,
+                      output_dataset_name=output_dataset_name)
+
+
+@celery.task()
+def train_save_pipeline_task(topic_id):
+    matching_documents = Tag.query\
+        .join(Document)\
+        .filter(Tag.topic_id == topic_id)\
+        .with_entities(
+            Document.updated_sentence,
+            Document.sentiment_percentage,
+            Document.post_id,
+            Document.parent_tag,
+            Document.likes,
+            Tag.label.label('tag')
+        )\
+        .all()
+
+    matching_documents = list(map(
+        lambda x: x._asdict(),
+        matching_documents
+    ))
+
+    df = pd.DataFrame.from_dict(matching_documents)
+
+    topic = Topic.query\
+        .get(topic_id)
+
+    topic.pipeline = train_pipe(df)
+
+    db.session.commit()
+    return topic_id
+
+
+@celery.task()
+def update_topic_task(topic_id):
+
+    matching_sentences = Tag.query\
+        .join(Document)\
+        .filter(Tag.topic_id == topic_id)\
+        .with_entities(Document.id, Document.sentence)\
+        .all()
+
+    matching_sentences = list(map(
+        lambda x: x._asdict(),
+        matching_sentences
+    ))
+
+    nlp4sk = NLP4SKSimplePreprocesser('sentence')
+    updated_matching_sentences = nlp4sk.transform(matching_sentences)
+    updated_ids = list(updated_matching_sentences.keys())
+
+    for uid in updated_ids:
+        logger.info(uid)
+        doc = Document.query\
+            .get(uid)
+        doc.updated_sentence = updated_matching_sentences[uid]
+
+    topic = Topic.query.get(topic_id)
+    topic.updated = True
+
+    db.session.commit()
+
+    return topic_id
+
+
+@celery.task()
+def create_topic_task(df: pd.DataFrame, name: str):
+    df = pd.read_json(df)
+
+    unique_tags = list(df.tag.unique())
+
+    topic = Topic(
+        name=name,
+        pipeline_name=f'{name}-pipeline',
+        updated=False
+    )
+
+    topic.tags = list(map(
+        lambda x: Tag(
+            label=x,
+            topic_id=topic.id
+
+        ),
+        unique_tags
+    ))
+
+    for tag in topic.tags:
+        tag.documents = df[df.tag == tag.label]\
+            .apply(lambda x: Document(
+                x.sentence,
+                None,
+                x.sentiment_percentage,
+                x.post_id,
+                x.parent_tag,
+                x.likes
+            ), axis=1
+        )
+
+    db.session.add(topic)
+    db.session.commit()
+
+    return topic.id

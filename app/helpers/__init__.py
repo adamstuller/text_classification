@@ -1,9 +1,2 @@
-import os
-
-
-def required(name):
-    try:
-        return os.environ[name]
-    except KeyError:
-        message = "Expected environment variable '{}' not set.".format(name)
-        raise Exception(message)
+from .required import required
+from .csv_reading import process_csv
