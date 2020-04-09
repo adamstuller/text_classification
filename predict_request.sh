@@ -1,4 +1,4 @@
-curl 'http://localhost:5000/api/v1/topics/test/predict' \
+curl 'http://localhost:5000/api/v1/topics/banks/predict' \
 -X POST \
 -H "Content-Type:application/json" \
 -d '{
