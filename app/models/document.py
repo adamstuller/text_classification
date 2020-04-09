@@ -1,5 +1,5 @@
 from .base import db
-from datetime import date
+from datetime import datetime
 
 
 class Document(db.Model):
@@ -12,8 +12,19 @@ class Document(db.Model):
     parent_tag = db.Column('parent_class', db.String(20))
     likes = db.Column('likes', db.Integer)
     tag_id = db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'))
-    created_at = db.Column('created_at', db.DateTime)
-    updated_at = db.Column('updated_at', db.DateTime)
+    created_at = db.Column(
+        'created_at',
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+    updated_at = db.Column(
+        'updated_at',
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+        onupdate=datetime.utcnow
+    )
 
     def __repr__(self):
         return '<Document %r>' % self.name
@@ -26,5 +37,3 @@ class Document(db.Model):
         self.post_id = post_id
         self.parent_class = parent_class
         self.likes = likes
-        self.created_at = date.today()
-        self.updated_at = date.today()

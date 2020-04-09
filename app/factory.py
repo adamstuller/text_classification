@@ -20,9 +20,6 @@ def create_app(app_name=PKG_NAME, **kwargs):
 
     if kwargs.get("celery"):
         init_celery(kwargs.get("celery"), app)
-    
-    from app.machine_learning import machine_learning_bp
-    app.register_blueprint(machine_learning_bp)
 
     from . import workflows
     workflows.init_app(app)

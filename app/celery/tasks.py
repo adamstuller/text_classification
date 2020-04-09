@@ -6,6 +6,7 @@ from app.models import Topic, Document, Tag, db
 from datetime import date
 from celery.utils.log import get_task_logger
 from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
+from functools import reduce
 
 logger = get_task_logger(__name__)
 
@@ -57,11 +58,12 @@ def train_save_pipeline_task(topic_id):
 
 
 @celery.task()
-def update_topic_task(topic_id):
+def nlp4sk_topic_task(topic_id):
 
     matching_sentences = Tag.query\
         .join(Document)\
         .filter(Tag.topic_id == topic_id)\
+        .filter(Document.updated_sentence == None)\
         .with_entities(Document.id, Document.sentence)\
         .all()
 
@@ -72,6 +74,16 @@ def update_topic_task(topic_id):
 
     nlp4sk = NLP4SKSimplePreprocesser('sentence')
     updated_matching_sentences = nlp4sk.transform(matching_sentences)
+
+    #Structure must be changed to {id: updated_sentence}
+    updated_matching_sentences = reduce(
+        lambda acc, x: {
+            **acc,
+            **{x['id']:x['updated_sentence'] }
+        },
+        updated_matching_sentences,
+        {}
+    )
     updated_ids = list(updated_matching_sentences.keys())
 
     for uid in updated_ids:
@@ -89,7 +101,10 @@ def update_topic_task(topic_id):
 
 
 @celery.task()
-def create_topic_task(df: pd.DataFrame, name: str):
+def create_topic_task(df, name: str):
+
+    logger.info(df)
+
     df = pd.read_json(df)
 
     unique_tags = list(df.tag.unique())
@@ -125,3 +140,31 @@ def create_topic_task(df: pd.DataFrame, name: str):
     db.session.commit()
 
     return topic.id
+
+
+@celery.task()
+def update_topic_task(df: pd.DataFrame, topic_name: str):
+    df = pd.read_json(df)
+
+    topic = Topic.query\
+        .filter(Topic.name == topic_name)\
+        .first()
+
+    unique_tags = topic.tags
+
+    for tag in topic.tags:
+        tag.documents.extend(df[df.tag == tag.label]\
+            .apply(lambda x: Document(
+                x.sentence,
+                None,
+                x.sentiment_percentage,
+                x.post_id,
+                x.parent_tag,
+                x.likes
+            ), axis=1
+        ))
+
+    topic.updated = False
+    db.session.commit()
+    return topic.id
+    

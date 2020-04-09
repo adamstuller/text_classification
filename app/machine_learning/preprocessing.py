@@ -303,14 +303,13 @@ class NLP4SKSimplePreprocesser():
         return self
 
     def transform(self, l: list):
-        return reduce(
-            lambda acc, x: {
-                **acc,
-                **{x['id']: self.__transform_one(x[self.sentence_column])},
+        return list(map(
+            lambda dic: {
+                'updated_sentence':  self.__transform_one(dic[self.sentence_column]),
+                **dic
             },
-            l,
-            {}
-        )
+            l
+        ))
 
 
 class TFIDFTransformer():
