@@ -75,14 +75,12 @@ def train_pipeline_task(topic_id):
 @celery.task()
 def nlp4sk_topic_task(topic_id):
 
-    matching_documents = Topic\
-        .get_matching_documents(
-            topic_id,
-            [
-                Document.id,
-                Document.sentence
-            ]
-        )
+    matching_documents = Tag.query\
+        .join(Document)\
+        .filter(Tag.topic_id == topic_id)\
+        .filter(Document.updated_sentence == None)\
+        .with_entities(Document.id, Document.sentence)\
+        .all()
 
     nlp4sk = NLP4SKSimplePreprocesser('sentence')
     updated_matching_sentences = nlp4sk.transform(matching_documents)
