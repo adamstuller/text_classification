@@ -8,7 +8,7 @@ import pandas as pd
 from pandas.io.json import build_table_schema
 from app.helpers import process_csv
 from app.config import COLUMN_NAMES
-from app.celery.tasks import create_topic_task, nlp4sk_topic_task, train_save_pipeline_task, update_topic_task
+from app.celery.tasks import create_topic_task, nlp4sk_topic_task, train_pipeline_task, update_topic_task
 from celery import chain
 
 
@@ -45,7 +45,7 @@ def handle_topics():
         chain(
             create_topic_task.signature(),
             nlp4sk_topic_task.signature(),
-            train_save_pipeline_task.signature()
+            train_pipeline_task.signature()
         ).delay(dataset.to_json(), topic_name)
 
         return {
@@ -63,13 +63,13 @@ def handle_topics():
             dataset = process_csv(
                 request.files.get('dataset'),
                 column_names=None
-            )  # .to_json()
+            )  
             topic_name = request.form.get('name')
 
         chain(
             update_topic_task.signature(),
             nlp4sk_topic_task.signature(),
-            train_save_pipeline_task.signature()
+            train_pipeline_task.signature()
         ).delay(dataset.to_json(), topic_name)
 
         return {

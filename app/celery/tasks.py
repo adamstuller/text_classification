@@ -1,9 +1,8 @@
 from app import celery
-from app.machine_learning.train import train_pipeline, nlp4sk_preprocess, train_pipe
-from app.config import config,  DEFAULT_DATASET
+from app.machine_learning.train import  train_pipe
+from app.config import config
 import pandas as pd
 from app.models import Topic, Document, Tag, db
-from datetime import date
 from celery.utils.log import get_task_logger
 from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
 from functools import reduce
@@ -12,22 +11,7 @@ logger = get_task_logger(__name__)
 
 
 @celery.task()
-def train_pipeline_task(pipeline_name, topic_type):
-    train_pipeline(
-        pipeline_name=pipeline_name,
-        topic_type=topic_type,
-        dataset_name=config['default_dataset'][topic_type]
-    )
-
-
-@celery.task()
-def nlp4sk_preprocess_task(input_dataset_name='banks', output_dataset_name=DEFAULT_DATASET):
-    nlp4sk_preprocess(input_dataset_name=input_dataset_name,
-                      output_dataset_name=output_dataset_name)
-
-
-@celery.task()
-def train_save_pipeline_task(topic_id):
+def train_pipeline_task(topic_id):
     matching_documents = Tag.query\
         .join(Document)\
         .filter(Tag.topic_id == topic_id)\
