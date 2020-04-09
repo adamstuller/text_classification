@@ -1,12 +1,8 @@
 from app.machine_learning.preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
 from sklearn.pipeline import Pipeline
 import pandas as pd
-from joblib import dump, load
-from os import path, listdir
-from os.path import isfile, splitext
 from app.config import config, PARENT_CLASS_COLUMN_NAME, UPDATED_SENTENCE_COLUMN_NAME
 from sklearn.ensemble import RandomForestClassifier
-from datetime import date
 
 
 def train_pipe(X: pd.DataFrame, Y: pd.DataFrame):
