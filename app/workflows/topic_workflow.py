@@ -8,7 +8,7 @@ import pandas as pd
 from pandas.io.json import build_table_schema
 from app.helpers import process_csv
 from app.config import COLUMN_NAMES
-from app.celery.tasks import create_topic_task, nlp4sk_topic_task, train_pipeline_task, update_topic_task
+from app.celery.tasks import create_topic_task, nlp4sk_topic_task, train_pipeline_task, update_topic_task, evaluate_model_task
 from celery import chain
 
 
@@ -29,24 +29,27 @@ def handle_topics():
         }
     elif request.method == 'POST':
         # TODO: BUDE TREBA ZVALIDOVAT FORM
-        dataset, topic_name = None, None
+        dataset, topic_name, topic_desc = None, None, None
 
         if request.is_json:
             data = request.get_json()
             dataset = pd.DataFrame(data['dataset'])
             topic_name = data['name']
+            topic_desc = data['description']
         else:
             dataset = process_csv(
                 request.files.get('dataset'),
                 column_names=None
             ) 
             topic_name = request.form.get('name')
+            topic_desc = request.form.get('description')
 
         chain(
             create_topic_task.signature(),
             nlp4sk_topic_task.signature(),
-            train_pipeline_task.signature()
-        ).delay(dataset.to_json(), topic_name)
+            train_pipeline_task.signature(),
+            evaluate_model_task.signature()
+        ).delay(dataset.to_json(), topic_name, topic_desc)
 
         return {
             'message': 'topic accepted, request is being handled'
@@ -69,7 +72,8 @@ def handle_topics():
         chain(
             update_topic_task.signature(),
             nlp4sk_topic_task.signature(),
-            train_pipeline_task.signature()
+            train_pipeline_task.signature(),
+            evaluate_model_task.signature()
         ).delay(dataset.to_json(), topic_name)
 
         return {

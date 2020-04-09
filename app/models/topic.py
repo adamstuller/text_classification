@@ -1,4 +1,6 @@
 from .base import db
+from .tag import Tag
+from .document import Document
 from datetime import datetime
 
 
@@ -18,7 +20,15 @@ class Topic(db.Model):
         nullable=False,
         default=False
     )
+
     pipeline = db.Column('pipeline', db.PickleType)
+    f1_macro = db.Column('f1_macro', db.Float)
+    f1_weighted = db.Column('f1_weighted', db.Float)
+    recall = db.Column('recall', db.Float)
+    precision = db.Column('precision', db.Float)
+    accuracy = db.Column('accuracy', db.Float)
+    description = db.Column('description', db.Text)
+
     created_at = db.Column(
         'created_at',
         db.DateTime,
@@ -43,12 +53,26 @@ class Topic(db.Model):
 
         return pipeline
 
+    @classmethod
+    def get_matching_documents(cls, topic_id, entities):
+        matching_documents = cls.query\
+            .join(Tag)\
+            .join(Document)\
+            .filter(cls.id == topic_id)\
+            .with_entities(*entities)\
+            .all()
+
+        return list(map(
+            lambda x: x._asdict(),
+            matching_documents
+        ))
+
     def __repr__(self):
         return '<Topic %r>' % self.name
 
-    def __init__(self, name, pipeline_name, updated=False,  tags=[]):
+    def __init__(self, name, description, updated=False,  tags=[]):
         super()
         self.name = name
-        self.pipeline_name = pipeline_name
+        self.description = description
         self.updated = updated
         self.tags = tags
