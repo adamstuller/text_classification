@@ -67,6 +67,18 @@ class Topic(db.Model):
             matching_documents
         ))
 
+    @classmethod
+    def get_all_topics(cls, entities):
+        all_topics = cls.query\
+            .with_entities(*entities)\
+            .all()
+
+        return list(map(
+            lambda x: x._asdict(),
+            all_topics
+        ))
+
+
     def __repr__(self):
         return '<Topic %r>' % self.name
 

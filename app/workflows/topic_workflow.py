@@ -20,9 +20,18 @@ def handle_topics():
 
     if request.method == 'GET':
 
-        all_topics = Topic.query\
-            .with_entities(Topic.name)\
-            .all()
+        all_topics = Topic.get_all_topics(
+            [
+                Topic.name,
+                Topic.description,
+                Topic.accuracy,
+                Topic.f1_macro,
+                Topic.f1_weighted,
+                Topic.recall,
+                Topic.precision,
+                Topic.updated
+            ]
+        ) 
         return {
             'message': 'all topics retreived',
             'topics': all_topics

@@ -6,13 +6,13 @@ curl http://0.0.0.0:5000/api/v1/topics -X PUT \
         {
             "sentence": "Cokolada",
             "likes": 34,
-            "sentiment_percentage": 12.32,
-            "post_id": 1233,
+            "sentiment_percentage": 0.52,
+            "post_id": 51354,
             "posted_by": 1,
             "parent_tag": "Neutral",
             "tag": "Neutral"
         }
     ], 
-    "name": "test"
+    "name": "banks"
 }
 '

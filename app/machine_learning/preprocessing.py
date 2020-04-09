@@ -278,7 +278,7 @@ class NLP4SKSimplePreprocesser():
         sleep(dll)
         return response.json()
 
-    def __transform_one(self, sentence):
+    def __transform_one(self, sentence, index):
 
         try:
             restored_sentence = self.__reconstruct_sentence(sentence, 1)
@@ -294,6 +294,7 @@ class NLP4SKSimplePreprocesser():
                 else:
                     processed_sentence.append(x['word'])
 
+            print(f'processing sentence  n. {index}')
             return ' '.join(filter(lambda x: x != None, processed_sentence))
         except:
             print('error')
@@ -303,12 +304,17 @@ class NLP4SKSimplePreprocesser():
         return self
 
     def transform(self, l: list):
-        return list(map(
-            lambda dic: {
-                'updated_sentence':  self.__transform_one(dic[self.sentence_column]),
-                **dic
+        enriched = list(map(
+            lambda x: {
+                'updated_sentence':  self.__transform_one(x[1][self.sentence_column], x[0]),
+                **x[1]
             },
-            l
+            enumerate(l)
+        ))
+
+        return list(filter(
+            lambda x: not x['updated_sentence'] == '',
+            enriched
         ))
 
 

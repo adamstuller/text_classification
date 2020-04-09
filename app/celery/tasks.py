@@ -10,7 +10,8 @@ from functools import reduce
 from app.helpers import dict_to_map
 
 logger = get_task_logger(__name__)
-#TODO: PREROBIT ASYNCHRONNE
+# TODO: PREROBIT ASYNCHRONNE
+
 
 @celery.task()
 def evaluate_model_task(topic_id):
@@ -43,8 +44,6 @@ def evaluate_model_task(topic_id):
         logger.error('Error occured by evaluating model')
     return topic_id
 
-    
-
 
 @celery.task()
 def train_pipeline_task(topic_id):
@@ -62,6 +61,7 @@ def train_pipeline_task(topic_id):
         )
 
     df = pd.DataFrame(matching_documents)
+    df = df[df['updated_sentence'].notna()]
 
     topic = Topic.query\
         .get(topic_id)
@@ -159,19 +159,25 @@ def update_topic_task(df: pd.DataFrame, topic_name: str):
         .filter(Topic.name == topic_name)\
         .first()
 
-    unique_tags = topic.tags
+    original = topic.tags
+    new_tags = list(df.tag.unique())
 
-    for tag in topic.tags:
-        tag.documents.extend(df[df.tag == tag.label]
-                             .apply(lambda x: Document(
-                                 x.sentence,
-                                 None,
-                                 x.sentiment_percentage,
-                                 x.post_id,
-                                 x.parent_tag,
-                                 x.likes
-                             ), axis=1
-        ))
+    for tag in [x for x in new_tags if x in original]:
+        matching_documents = df[df.tag == tag.label]
+
+        tag.documents.extend(
+            matching_documents.apply(
+                lambda x: Document(
+                    x.sentence,
+                    None,
+                    x.sentiment_percentage,
+                    x.post_id,
+                    x.parent_tag,
+                    x.likes
+                ),
+                axis=1
+            )
+        )
 
     topic.updated = False
     db.session.commit()
