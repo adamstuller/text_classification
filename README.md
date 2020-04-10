@@ -24,8 +24,14 @@ For production:
 `
 SENDGRID_API_KEY=your_sendgrid_api_key docker-compose -f docker-compose.prod.yml up 
 `
+## Database
 
+To make dump from database, docker-compose needs to be running. Then execute: 
 
 `docker exec -t postgres_development pg_dumpall -c -U postgres_development > backups/dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql`
+
+This will create new dump in backups folder.
+
+To seed db run: 
 
 `cat dump_09-04-2020_22_02_11.sql | docker exec -i postgres_development psql -U postgres_development  -d text_classification_development`
