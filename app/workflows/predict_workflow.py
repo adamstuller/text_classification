@@ -5,6 +5,7 @@ from jsonschema import validate, ValidationError, SchemaError
 import pandas as pd
 from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
 from app.machine_learning.predict import predict_tag
+from app.config import predict_schema
 
 nlp4sk = NLP4SKSimplePreprocesser('sentence')
 
@@ -21,7 +22,7 @@ def handle_predict(topic_name):
     dataset = data['dataset']
     #TODO: VALIDACIA
     # TODO: MAX 100
-    # validate(instance=data, schema=predict_schema)
+    validate(instance=data, schema=predict_schema)
 
     prediction = predict_tag(
         Topic.get_pipeline_by_name(topic_name),

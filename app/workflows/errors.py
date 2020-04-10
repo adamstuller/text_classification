@@ -10,3 +10,9 @@ def handle_validation_error(e):
         'error': e.message
     }, 400
 
+@workflows_bp.errorhandler(SchemaError)
+def handle_schema_error(e):
+    current_app.logger.error(e.message)
+    return {
+        'error': e.message
+    }, 400
