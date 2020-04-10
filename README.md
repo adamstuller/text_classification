@@ -16,15 +16,13 @@ Note that you need SENDGRID_API_KEY environmental variable to run docker-compose
 Hence, if you want to run project for development purposes, run:
 
 `
-SENDGRID_API_KEY=your_sendgrid_api_key \
-docker-compose -f docker-compose.dev.yml up 
+SENDGRID_API_KEY=your_sendgrid_api_key docker-compose -f docker-compose.dev.yml up 
 `
 
 For production: 
 
 `
-SENDGRID_API_KEY=your_sendgrid_api_key \
-docker-compose -f docker-compose.prod.yml up 
+SENDGRID_API_KEY=your_sendgrid_api_key docker-compose -f docker-compose.prod.yml up 
 `
 
 
