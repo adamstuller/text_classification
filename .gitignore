@@ -182,5 +182,9 @@ pip-selfcheck.json
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+data/*
+data
+backups/*
 
 # End of https://www.gitignore.io/api/venv,flask,python,visualstudiocode
+sendgrid.env

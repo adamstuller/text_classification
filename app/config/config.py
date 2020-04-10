@@ -1,5 +1,4 @@
 from os import path, getenv
-from .constants import PEPCO, BANKS
 
 config = {
     'flask': {
@@ -25,34 +24,12 @@ config = {
             'handlers': ['wsgi']
         }
     },
-    "path_to_models": {
-        BANKS: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data',  'models', BANKS),
-        PEPCO: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data', 'models', PEPCO),
-    },
-    "path_to_datasets": {
-        BANKS: path.join(path.dirname(path.realpath(__file__)), '..', 'machine_learning', 'data', 'datasets', BANKS),
-        PEPCO: path.join(path.dirname(path.realpath(__file__)),
-                        '..', 'machine_learning', 'data', 'datasets', PEPCO)
-    },
-    "classes": {
-        BANKS: ['Neutral', 'Súťaž', 'Interakcia', 'Ostatné', 'Ponuka produktov',
-                'Cena produktov / benefity', 'Problémy s produktom', 'Odpovede',
-                'Produkt', 'Otázky', 'Pobočka'],
-        PEPCO: ['Quality', 'Unavailability of products', 'Offer of products',
-                'Absent of e-shop', 'Lack of Pepco', 'Product', 'Interaction',
-                'Price', 'Neutral', 'Other']
-    },
-    'pipeline': {
-        PEPCO: 'pipeline-default.joblib',
-        BANKS: 'pipeline-default.joblib'
-    },
-    'default_dataset': {
-        PEPCO: 'updated_pepco',
-        BANKS: 'updated_banks'
-    },
     'redis_url': getenv('REDIS_URL', 'localhost'),
-    'available_topics': [BANKS,  PEPCO],
     'database': {
         'create_on_start': getenv('DATABASE__CREATE_ON_START', 'False') == 'True'
+    },
+    'sendgrid': {
+        'api_key': getenv('SENDGRID_API_KEY'),
+        'mailfrom': 'adam.stuller@protonmail.com'
     }
 }
