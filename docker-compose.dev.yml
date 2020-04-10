@@ -12,6 +12,8 @@ services:
       target: dev
       args: 
         DATABASE__CREATE: "True"
+        SENDGRID_API_KEY: "${SENDGRID_API_KEY}"
+        
     networks:
       - shared
     volumes:
@@ -41,6 +43,7 @@ services:
       target: dev
       args: 
         DATABASE__CREATE: "False"
+        SENDGRID_API_KEY: ${SENDGRID_API_KEY}
     command: celery -A celery_worker.celery worker -l INFO
     networks:
       - shared

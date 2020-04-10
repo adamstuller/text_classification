@@ -13,13 +13,14 @@ nlp4sk = NLP4SKSimplePreprocesser('sentence')
 def handle_single_topic(topic_name):
     pass
 
+
 @workflows_bp.route('/api/v1/topics/<topic_name>/predict', methods=['POST'])
 def handle_predict(topic_name):
 
     data = request.json
     dataset = data['dataset']
     #TODO: VALIDACIA
-    #TODO: MAX 100 
+    # TODO: MAX 100
     # validate(instance=data, schema=predict_schema)
 
     prediction = predict_tag(

@@ -27,5 +27,9 @@ config = {
     'redis_url': getenv('REDIS_URL', 'localhost'),
     'database': {
         'create_on_start': getenv('DATABASE__CREATE_ON_START', 'False') == 'True'
+    },
+    'sendgrid': {
+        'api_key': getenv('SENDGRID_API_KEY'),
+        'mailfrom': 'adam.stuller@protonmail.com'
     }
 }

@@ -184,5 +184,7 @@ pip-selfcheck.json
 .history
 data/*
 data
+backups/*
 
 # End of https://www.gitignore.io/api/venv,flask,python,visualstudiocode
+sendgrid.env
