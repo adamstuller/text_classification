@@ -12,15 +12,18 @@ Once you installed dependencies, clone repository:
 git clone https://github.com/AdamStuller/text_classification.git
 `
 
-Aftewars, if you want to run project for development pusposes, run:
+Note that you need SENDGRID_API_KEY environmental variable to run docker-compose properly.
+Hence, if you want to run project for development purposes, run:
 
 `
+SENDGRID_API_KEY=your_sendgrid_api_key \
 docker-compose -f docker-compose.dev.yml up 
 `
 
 For production: 
 
 `
+SENDGRID_API_KEY=your_sendgrid_api_key \
 docker-compose -f docker-compose.prod.yml up 
 `
 
