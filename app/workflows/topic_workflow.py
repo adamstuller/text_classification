@@ -20,27 +20,24 @@ from werkzeug.exceptions import BadRequest
 from celery import chain
 
 
-def handle_form(form, required):
+def validate_form(form, required):
     for item in required:
         if item not in form:
             raise BadRequest(f"'{item}' is a required property")
 
 
-def handle_dataset(files):
+def validate_dataset(files):
     if 'dataset' not in files:
         raise BadRequest(f'\'dataset\' is a required property')
-    df = process_csv(
-        request.files.get('dataset'),
-        column_names=None
-    )
 
-    return df
 
 def columns_expected(df):
     return set(list(df.columns.unique())) == set(COLUMN_NAMES)
 
+
 def minimal_size(df):
     return len(df) >= config['min_database_size']
+
 
 def minimal_tag_size(df):
     return df.groupby('tag').count().sentence.ge(config['min_tag_size']).all()
@@ -115,9 +112,13 @@ def handle_topics():
             if 'mailto' in data:
                 mailto = data['mailto']
         else:
-            handle_form(request.form, ['name', 'description'])
+            validate_form(request.form, ['name', 'description'])
+            validate_dataset(request.files)
+            dataset = process_csv(
+                request.files.get('dataset'),
+                column_names=None
+            )
 
-            dataset = handle_dataset(request.files)
             topic_name = request.form.get('name')
             topic_desc = request.form.get('description')
             if 'mailto' in request.form:
@@ -155,8 +156,12 @@ def handle_topics():
             if 'mailto' in data:
                 mailto = data['mailto']
         else:
-            handle_form(request.form, ['name'])
-            dataset = handle_dataset(request.files)
+            validate_form(request.form, ['name'])
+            validate_dataset(request.files)
+            dataset = process_csv(
+                request.files.get('dataset'),
+                column_names=None
+            )
 
             topic_name = request.form.get('name')
             if 'mailto' in request.form:
