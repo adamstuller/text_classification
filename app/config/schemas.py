@@ -12,15 +12,26 @@ predict_schema = {
                     'type': 'object',
                     'properties': {
                         'sentence': {'type': 'string'},
-                        'likes': {'type': 'integer'},
-                        'sentiment_percentage': {'type': 'number'},
-                        'post_id': {'type': 'integer'},
+                        'likes': {
+                            'type': 'integer',
+                            'default': 0
+                        },
+                        'sentiment_percentage': {
+                            'type': 'number',
+                            'default': 0.5
+                        },
+                        'post_id': {
+                            'type': 'integer',
+                            'default': 0
+                        },
                         'posted_by': {
                             'type': 'integer',
                             'enum': [0, 1],
                             'default': 0
                         },
-                        'parent_tag': {'type': 'string'}
+                        'parent_tag': {
+                            'type': 'string'
+                        }
                     }
                 }
             }
@@ -45,6 +56,7 @@ create_topic_schema = {
         'dataset': {
             'type': 'array',
             'items': {
+                'required': ['sentence', 'tag'],
                 'type': 'object',
                 'properties': {
                     'sentence': {'type': 'string'},

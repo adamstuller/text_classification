@@ -12,7 +12,7 @@ curl http://0.0.0.0:5000/api/v1/topics -X PUT \
             "parent_tag": "Neutral",
             "tag": "Neutral"
         }
-    ], 
+    ],
     "name": "banks"
 }
 '

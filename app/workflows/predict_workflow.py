@@ -6,6 +6,8 @@ import pandas as pd
 from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
 from app.machine_learning.predict import predict_tag
 from app.config import predict_schema
+from app.helpers import DefaultValidatingDraft7Validator
+from copy import deepcopy
 
 nlp4sk = NLP4SKSimplePreprocesser('sentence')
 
@@ -18,11 +20,15 @@ def handle_single_topic(topic_name):
 @workflows_bp.route('/api/v1/topics/<topic_name>/predict', methods=['POST'])
 def handle_predict(topic_name):
 
-    data = request.json
+    data = deepcopy(request.json)
+    current_app.logger.info(data)
+    DefaultValidatingDraft7Validator(predict_schema)\
+        .validate(data)
+
+    current_app.logger.info(data)
+
     dataset = data['dataset']
-    #TODO: VALIDACIA
-    # TODO: MAX 100
-    validate(instance=data, schema=predict_schema)
+
 
     prediction = predict_tag(
         Topic.get_pipeline_by_name(topic_name),

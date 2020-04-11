@@ -31,5 +31,7 @@ config = {
     'sendgrid': {
         'api_key': getenv('SENDGRID_API_KEY'),
         'mailfrom': 'adam.stuller@protonmail.com'
-    }
+    },
+    'min_database_size': 44,
+    'min_tag_size': 4
 }

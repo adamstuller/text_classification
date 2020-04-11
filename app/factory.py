@@ -27,6 +27,9 @@ def create_app(app_name=PKG_NAME, **kwargs):
     if kwargs.get('db') and kwargs.get('db') == True:
         models.init_app(app)
     
+    from . import errors
+    errors.init_app(app)
+
 
     @app.route('/')
     def check():
