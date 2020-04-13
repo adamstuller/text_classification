@@ -49,7 +49,7 @@ def send_confirmation_email_task(params):
         )
         logger.info(res)
     except Exception as e:
-        logger.error(e.message)
+        logger.error(e)
 
     return params
 
