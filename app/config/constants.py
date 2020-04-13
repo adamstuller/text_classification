@@ -4,7 +4,7 @@ DEFAULT_DATASET = 'updated_banks'
 
 # Column names 
 POSTED_BY_COLUMN_NAME = 'posted_by'
-CLASS_COLUMN_NAME = 'class'
+CLASS_COLUMN_NAME = 'tag'
 SENTENCE_COLUMN_NAME = 'sentence'
 UPDATED_SENTENCE_COLUMN_NAME = 'updated_sentence'
 SENTIMENT_PERCENTAGE_COLUMN_NAME = 'sentiment_percentage'
