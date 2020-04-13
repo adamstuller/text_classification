@@ -99,7 +99,6 @@ def handle_topics():
             'topics': all_topics
         }
     elif request.method == 'POST':
-        # TODO: BUDE TREBA ZVALIDOVAT FORM
         dataset, topic_name, topic_desc, mailto = None, None, None, None
 
         if request.is_json:
@@ -145,7 +144,7 @@ def handle_topics():
             'message': 'topic accepted, request is being handled'
         }, 202
     elif request.method == 'PUT':
-        # TODO: BUDE TREBA ZVALIDOVAT FORM
+
         dataset, topic_name,  mailto = None, None, None
 
         if request.is_json:

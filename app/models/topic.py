@@ -46,12 +46,12 @@ class Topic(db.Model):
 
     @classmethod
     def get_pipeline_by_name(cls, topic_name):
-        pipeline, *_ = cls.query\
+        pipeline_result = cls.query\
             .filter(topic_name == Topic.name)\
             .with_entities(Topic.pipeline)\
             .first()
 
-        return pipeline
+        return pipeline_result[0] if pipeline_result is not None else None
 
     @classmethod
     def get_matching_documents(cls, topic_id, entities):
@@ -77,6 +77,12 @@ class Topic(db.Model):
             lambda x: x._asdict(),
             all_topics
         ))
+
+    @classmethod
+    def find_by_name(cls,  topic_name):
+        return Topic.query\
+            .filter(cls.name  ==  topic_name)\
+            .first()
 
 
     def __repr__(self):
