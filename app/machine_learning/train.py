@@ -1,4 +1,4 @@
-from app.machine_learning.preprocessing import NLP4SKPreprocesser, TFIDFTransformer, LDATransformer, OneHotTransformer
+from app.machine_learning.preprocessing import  TFIDFTransformer, LDATransformer, OneHotTransformer
 from sklearn.pipeline import Pipeline
 import pandas as pd
 from app.config import config, PARENT_CLASS_COLUMN_NAME, UPDATED_SENTENCE_COLUMN_NAME

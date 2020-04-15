@@ -3,7 +3,7 @@ from flask import request, current_app, jsonify
 from app.models import Topic, Document, Tag
 from jsonschema import validate, ValidationError, SchemaError
 import pandas as pd
-from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
+from app.machine_learning.preprocessing import NLP4SKPreprocesser
 from app.machine_learning.predict import predict_tag
 from app.config import predict_schema
 from app.helpers import DefaultValidatingDraft7Validator
@@ -11,7 +11,7 @@ from copy import deepcopy
 from werkzeug.exceptions import NotFound
 
 
-nlp4sk = NLP4SKSimplePreprocesser('sentence')
+nlp4sk = NLP4SKPreprocesser('sentence')
 
 
 @workflows_bp.route('/api/v1/topics/<topic_name>', methods=['GET'])

@@ -4,7 +4,7 @@ from app.config import config
 import pandas as pd
 from app.models import Topic, Document, Tag, db
 from celery.utils.log import get_task_logger
-from app.machine_learning.preprocessing import NLP4SKSimplePreprocesser
+from app.machine_learning.preprocessing import NLP4SKPreprocesser
 from app.machine_learning.evaluation import evaluate
 from functools import reduce
 from app.helpers import dict_to_map
@@ -137,7 +137,7 @@ def nlp4sk_topic_task(params):
         matching_documents
     ))
 
-    nlp4sk = NLP4SKSimplePreprocesser('sentence')
+    nlp4sk = NLP4SKPreprocesser('sentence')
 
     updated_matching_sentences = nlp4sk.transform(matching_documents)
 
