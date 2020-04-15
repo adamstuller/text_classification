@@ -2,7 +2,7 @@ from time import sleep
 import requests
 
 
-class NLP4SKSimplePreprocesser():
+class NLP4SKPreprocesser():
 
     def __init__(self, sentence_column):
         self.sentence_column = sentence_column
