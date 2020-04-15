@@ -12,8 +12,7 @@ services:
       target: dev
       args: 
         DATABASE__CREATE: "True"
-        SENDGRID_API_KEY: "${SENDGRID_API_KEY}"
-        
+        SENDGRID_API_KEY: "${SENDGRID_API_KEY}"  
     networks:
       - shared
     volumes:
