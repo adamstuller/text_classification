@@ -73,6 +73,8 @@ def evaluate_model_task(params):
             )
 
         df = pd.DataFrame(matching_documents)
+        df = df[df['updated_sentence'].notna()]
+        
         result = evaluate(df)
         topic = Topic.query.get(topic_id)
         topic.f1_macro = result['f1_macro']
@@ -83,7 +85,7 @@ def evaluate_model_task(params):
         db.session.commit()
         logger.info(result)
     except Exception as e:
-        logger.error(f'Error occured by evaluating model: {e.message}')
+        logger.error(f'Error occured by evaluating model: {e}')
     return params
 
 
@@ -141,19 +143,11 @@ def nlp4sk_topic_task(params):
 
     updated_matching_sentences = nlp4sk.transform(matching_documents)
 
-    # Structure must be changed to {id: updated_sentence}
-    updated_matching_sentences = dict_to_map(
-        updated_matching_sentences,
-        'id',
-        'updated_sentence'
-    )
-
-    updated_ids = list(updated_matching_sentences.keys())
-
-    for uid in updated_ids:
+    for ums in updated_matching_sentences:
         doc = Document.query\
-            .get(uid)
-        doc.updated_sentence = updated_matching_sentences[uid]
+            .get(ums['id'])
+
+        doc.updated_sentence = ums['updated_sentence']
 
     topic = Topic.query.get(topic_id)
     topic.updated = True

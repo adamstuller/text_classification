@@ -10,7 +10,7 @@ class TFIDFTransformer():
                                      lowercase=False,
                                      token_pattern=u'(?u)\\b\\w+\\b',
                                      ngram_range=(1, 3),
-                                     max_features=500
+                                     max_features=50
                                      )
         self.sentence_column = sentence_column
 
