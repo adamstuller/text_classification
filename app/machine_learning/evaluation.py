@@ -2,7 +2,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score,  accuracy_s
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from app.machine_learning.train import train_pipe
-
+from app.config import config
 
 def calculate_results(y_test, y_pred):
     return {
@@ -14,13 +14,13 @@ def calculate_results(y_test, y_pred):
     }
 
 
-def get_train_test(df, class_column='tag', drop_classes=[]):
+def get_train_test(df, class_column='tag', test_size=0.15, drop_classes=[]):
     x_trains, x_tests,  y_trains, y_tests = [], [], [], []
     for tag in df[class_column].unique().tolist():
         x, y = df[df[class_column] == tag].drop(
             columns=[*drop_classes, class_column]), df[df[class_column] == tag][class_column]
         x_train, x_test, y_train, y_test = train_test_split(
-            x, y, test_size=0.15, random_state=1000)
+            x, y, test_size=test_size, random_state=1000)
         x_trains.append(x_train)
         x_tests.append(x_test)
         y_trains.append(y_train)
@@ -32,7 +32,10 @@ def get_train_test(df, class_column='tag', drop_classes=[]):
 
 
 def evaluate(df: pd.DataFrame):
-    x_train, x_test, y_train, y_test = get_train_test(df)
-    pipe = train_pipe(x_train, y_train)
+    test_size = 0.15
+
+    x_train, x_test, y_train, y_test = get_train_test(df, test_size=test_size)
+    limit = int(config['limit_tag_size'] * (1 - test_size))
+    pipe = train_pipe(x_train, y_train, limit=limit)
     y_pred = pipe.predict(x_test)
     return calculate_results(y_test,  y_pred)

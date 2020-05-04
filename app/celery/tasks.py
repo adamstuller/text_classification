@@ -112,7 +112,7 @@ def train_pipeline_task(params):
     topic = Topic.query\
         .get(topic_id)
 
-    topic.pipeline = train_pipe(df.drop(columns=['tag']), df.tag)
+    topic.pipeline = train_pipe(df.drop(columns=['tag']), df.tag, limit=config['limit_tag_size'])
 
     db.session.commit()
     return params
