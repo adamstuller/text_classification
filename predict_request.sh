@@ -12,7 +12,7 @@ curl 'http://0.0.0.0:5000/api/v1/topics/banks/predict' \
             "parent_tag": "Neutral"
         },
         {
-            "sentence": "Databaza",
+            "sentence": "Dobry den zufalo hladam plytke taniere tohto vzoru. Zial v predajniach v Prievidzi su vypredane. Neviete mi pomoct kde sa daju este zohnat? Mal by to byt darcek. Dakujem. ",
             "posted_by": 0
         }
     ]
