@@ -13,7 +13,7 @@ curl http://0.0.0.0:5000/api/v1/topics -X PUT \
             "tag": "Neutral"
         }
     ],
-    "name": "banksss",
+    "name": "banks",
     "mailto": "adam.syn007@gmail.com"
 }
 '

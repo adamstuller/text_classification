@@ -19,6 +19,7 @@ def handle_single_topic(topic_name):
     topic = Topic.query\
         .filter(Topic.name == topic_name)\
         .with_entities(
+            Topic.id,
             Topic.name,
             Topic.description,
             Topic.accuracy,
@@ -29,9 +30,31 @@ def handle_single_topic(topic_name):
             Topic.updated
         )\
         .first()
+    from sqlalchemy import func
+    from functools import reduce
+
+    tags = Tag.query\
+        .filter(topic.id == Tag.topic_id)\
+        .join(Document)\
+        .with_entities(
+            Tag.label,
+            func.count(Tag.label)
+        )\
+        .group_by(Tag.label)\
+        .all()
+    
+    tags = reduce(
+        lambda acc, x: { **acc, **{x[0] :  x[1]}},
+        tags,
+        {}
+    )
+
+    current_app.logger.info(tags)
+
+
     
     if topic is not None:
-        return  topic._asdict()
+        return  { **topic._asdict(), 'tags': tags }  
     else:
         raise NotFound(f'Topic {topic_name} does not exist')
 

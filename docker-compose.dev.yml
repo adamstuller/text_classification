@@ -54,8 +54,6 @@ services:
       POSTGRES_USER: "postgres_development"
       POSTGRES_PASSWORD: "dbs_development"
       POSTGRES_DB: "text_classification_development"
-    # ports:
-    #   - 5432:5432
     volumes: 
       - ./backups:/backups
     restart: always
