@@ -34,4 +34,4 @@ This will create new dump in backups folder.
 
 To seed db run: 
 
-`cat dump_09-04-2020_22_02_11.sql | docker exec -i postgres_development psql -U postgres_development  -d text_classification_development`
+`cat backups/dump_09-04-2020_22_02_11.sql | docker exec -i postgres_development psql -U postgres_development  -d text_classification_development`
