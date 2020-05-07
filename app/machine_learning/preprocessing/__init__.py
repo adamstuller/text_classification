@@ -4,3 +4,4 @@ from app.machine_learning.preprocessing.onehot import OneHotTransformer
 from app.machine_learning.preprocessing.stopwords import SLOVAK_STOPWORDS
 from app.machine_learning.preprocessing.tfidf import TFIDFTransformer
 from app.machine_learning.preprocessing.tagbalance import TagBalancer
+from app.machine_learning.preprocessing.oversampling import oversample_strategy

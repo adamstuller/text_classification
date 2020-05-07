@@ -33,5 +33,6 @@ config = {
         'mailfrom': 'textclassification@periskop.life'
     },
     'min_database_size': 44,
-    'min_tag_size': 4
+    'min_tag_size': 4,
+    'limit_tag_size': 4
 }

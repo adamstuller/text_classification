@@ -12,6 +12,7 @@ class TagBalancer():
                 self.__tag_mapper[key] = 'DEFAULT' if self.__default_tag is None else self.__default_tag
             else: 
                 self.__tag_mapper[key] = key
+        print(self.__tag_mapper)
         return self
                 
     def transform(self, y):
