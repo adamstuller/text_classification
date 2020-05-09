@@ -1,6 +1,7 @@
 from functools import reduce
 import pandas as pd
 
+
 class OneHotTransformer():
     def __init__(self, columns):
         self.columns = columns    # Categorical
@@ -34,6 +35,9 @@ class OneHotTransformer():
 
     def transform(self, x):
         return self.__update_categories(
-            reduce(lambda df, column: self.__column_one_hot(
-                df, column), self.columns, x)
+            reduce(
+                lambda df, column: self.__column_one_hot(df, column),
+                self.columns,
+                x
+            )
         )

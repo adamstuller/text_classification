@@ -2,13 +2,13 @@ from app.config import config
 
 predict_schema = {
     'type': 'object',
-    'required': ['dataset'],
+    # 'required': ['dataset'],
     'properties': {
         'dataset':
             {
                 'type': 'array',
                 'items': {
-                    'required': ['sentence'],
+                    # 'required': ['sentence'],
                     'type': 'object',
                     'properties': {
                         'sentence': {'type': 'string'},

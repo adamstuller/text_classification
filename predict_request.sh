@@ -1,4 +1,4 @@
-curl 'http://0.0.0.0:5000/api/v1/topics/banks/predict' \
+curl 'http://0.0.0.0:5000/api/v1/topics/vub.banka/predict' \
 -X POST \
 -H "Content-Type:application/json" \
 -d '{
