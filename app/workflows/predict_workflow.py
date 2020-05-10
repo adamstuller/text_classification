@@ -69,7 +69,8 @@ def handle_single_topic(topic_name):
             'name': topic.name,
             'description': topic.description ,
             'tags': tags,
-            'evaluation': evaluation
+            'evaluation': evaluation,
+            'updated': topic.updated
         }  
     else:
         raise NotFound(f'Topic {topic_name} does not exist')

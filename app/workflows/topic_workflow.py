@@ -48,9 +48,9 @@ def check_dataset_constraints(df: pd.DataFrame, method: str):
         raise BadRequest(
             f'Dataset is smaller than {config["min_database_size"]} entries, which is minimal size')
 
-    if method == 'POST' and not minimal_tag_size(df):
-        raise BadRequest(
-            f'Not all of tags were in dataset at least {config["min_tag_size"]} times which is minimal required')
+    # if method == 'POST' and not minimal_tag_size(df):
+    #     raise BadRequest(
+    #         f'Not all of tags were in dataset at least {config["min_tag_size"]} times which is minimal required')
 
     if not columns_expected(df):
         raise BadRequest(
@@ -104,7 +104,7 @@ def handle_topics():
         if request.is_json:
             data = request.get_json()
             validate(instance=data, schema=create_topic_schema)
-
+            
             dataset = pd.DataFrame(data['dataset'])
             topic_name = data['name']
             topic_desc = data['description']
@@ -125,6 +125,8 @@ def handle_topics():
 
         check_dataset_constraints(dataset, method='POST')
         check_topic_not_allocated(topic_name)
+
+
         chain(
             create_topic_task.signature(),
             nlp4sk_topic_task.signature(),
@@ -132,7 +134,7 @@ def handle_topics():
             evaluate_model_task.signature(),
             send_confirmation_email_task.signature()
         ).delay(
-            dataset.to_json(),
+            dataset.to_json(orient='records'),
             {
                 'topic_name': topic_name,
                 'topic_desc': topic_desc,
@@ -141,7 +143,8 @@ def handle_topics():
         )
 
         return {
-            'message': 'topic accepted, request is being handled'
+            'message': 'topic accepted, request is being handled',
+            'success': True
         }, 202
     elif request.method == 'PUT':
 
@@ -174,7 +177,7 @@ def handle_topics():
             train_pipeline_task.signature(),
             evaluate_model_task.signature(),
             send_confirmation_email_task.signature()
-        ).delay(dataset.to_json(), {
+        ).delay(dataset.to_json(orient='records'), {
             'topic_name': topic_name,
             'mailto': mailto
         })
@@ -182,3 +185,10 @@ def handle_topics():
         return {
             'message': 'update accepted, request is being handled'
         }, 202
+
+@workflows_bp.route('/api/v1/topics/limit', methods=['GET'])
+def handle_limit():
+    return {
+        'limit_tag': config['limit_tag_size'],
+        'limit_dataset': config['min_database_size']
+    }

@@ -68,7 +68,12 @@ create_topic_schema = {
                         'enum': [0, 1],
                         'default': 0
                     },
-                    'parent_tag': {'type': 'string'},
+                    'parent_tag': {
+                        "anyOf": [
+                            { "type": "string" },
+                            { "type": "null" }
+                        ],
+                    },
                     'tag': {'type': 'string'}
                 }
             }

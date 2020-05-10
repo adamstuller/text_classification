@@ -184,15 +184,16 @@ def create_topic_task(df, params):
 
     for tag in topic.tags:
         tag.documents = df[df.tag == tag.label]\
-            .apply(lambda x: Document(
-                x.sentence,
-                None,
-                x.sentiment_percentage,
-                x.post_id,
-                x.parent_tag,
-                x.likes
-            ), axis=1
-        )
+            .apply(
+                lambda x: Document(
+                    str(x.sentence),
+                    None,
+                    float(x.sentiment_percentage),
+                    int(x.post_id),
+                    str(x.parent_tag),
+                    int(x.likes)
+                ), axis=1
+            )
 
     db.session.add(topic)
     db.session.commit()

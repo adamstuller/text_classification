@@ -32,7 +32,7 @@ config = {
         'api_key': getenv('SENDGRID_API_KEY'),
         'mailfrom': 'textclassification@periskop.life'
     },
-    'min_database_size': 44,
-    'min_tag_size': 4,
-    'limit_tag_size': 4
+    'min_database_size': 100,
+    # 'min_tag_size': 4,
+    'limit_tag_size': 20
 }
