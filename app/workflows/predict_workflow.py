@@ -8,7 +8,7 @@ from app.machine_learning.predict import predict_tag
 from app.config import predict_schema
 from app.helpers import DefaultValidatingDraft7Validator
 from copy import deepcopy
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound,  BadRequest, HTTPException
 
 
 nlp4sk = NLP4SKPreprocesser('sentence')
@@ -103,12 +103,21 @@ def handle_predict(topic_name):
     if pipeline is None:
         raise NotFound(f'Topic {topic_name} does not exist')
 
-    prediction = predict_tag(
-        pipeline,
-        nlp4sk.transform(dataset)
-    )
+    try:
+        prediction = predict_tag(
+            pipeline,
+            nlp4sk.transform(dataset)
+        )
 
-    return {
-        'message': 'predicted successfully',
-        'payload': prediction
-    }
+        current_app.logger.info(prediction)
+
+        return {
+            'success': True,
+            'payload': prediction
+        }
+
+    except KeyError as error: 
+        raise BadRequest(repr(error))
+
+    except Exception as e:
+        raise HTTPException(repr(e))

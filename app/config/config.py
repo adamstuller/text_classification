@@ -34,5 +34,5 @@ config = {
     },
     'min_database_size': 100,
     # 'min_tag_size': 4,
-    'limit_tag_size': 20
+    'limit_tag_size': 4
 }

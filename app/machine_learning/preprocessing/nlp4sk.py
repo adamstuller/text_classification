@@ -57,7 +57,8 @@ class NLP4SKPreprocesser():
             enumerate(l)
         )
 
-        return filter(
-            lambda x: not x['updated_sentence'] == '',
-            enriched
-        )
+#        return filter(
+#            lambda x: not x['updated_sentence'] == '',
+#            enriched
+#        )
+        return enriched

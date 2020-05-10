@@ -13,7 +13,8 @@ class JSONExceptionHandler(object):
         # current_app.logger.info(error)
         response = jsonify({
             'error': error.name,
-            'message': error.description
+            'message': error.description,
+            'success': False
         })
         response.status_code = error.code if isinstance(
             error, HTTPException) else 500

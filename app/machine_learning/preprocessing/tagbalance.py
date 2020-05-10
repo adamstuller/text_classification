@@ -1,15 +1,15 @@
 class TagBalancer():
     
-    def __init__(self, limit, default_tag=None):
+    def __init__(self, limit):
         self.__limit = limit
-        self.__default_tag = default_tag
+        # self.__default_tag = default_tag
     
     def fit(self,y):
         self.__original_tags = list(y.unique())
         self.__tag_mapper = y.value_counts().to_dict()
         for key, value in self.__tag_mapper.items():
             if value < self.__limit: 
-                self.__tag_mapper[key] = 'DEFAULT' if self.__default_tag is None else self.__default_tag
+                self.__tag_mapper[key] = 'DEFAULT_TAG' #if self.__default_tag is None else self.__default_tag
             else: 
                 self.__tag_mapper[key] = key
         print(self.__tag_mapper)
