@@ -39,8 +39,8 @@ def minimal_size(df):
     return len(df) >= config['min_database_size']
 
 
-def minimal_tag_size(df):
-    return df.groupby('tag').count().sentence.ge(config['min_tag_size']).all()
+# def minimal_tag_size(df):
+#     return df.groupby('tag').count().sentence.ge(config['min_tag_size']).all()
 
 
 def check_dataset_constraints(df: pd.DataFrame, method: str):
@@ -77,7 +77,7 @@ def check_topic_allocated(topic_name):
         )
 
 
-@workflows_bp.route('/api/v1/topics', methods=['GET', 'POST', 'PUT'])
+@workflows_bp.route('/api/v1/topics', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_topics():
 
     if request.method == 'GET':
@@ -146,12 +146,13 @@ def handle_topics():
             'message': 'topic accepted, request is being handled',
             'success': True
         }, 202
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
 
         dataset, topic_name,  mailto = None, None, None
 
         if request.is_json:
             data = request.get_json()
+            current_app.logger.info(data)
             validate(instance=data, schema=create_topic_schema)
             dataset = pd.DataFrame(data['dataset'])
             topic_name = data['name']
@@ -168,22 +169,29 @@ def handle_topics():
             topic_name = request.form.get('name')
             if 'mailto' in request.form:
                 mailto = request.form.get('mailto')
+        current_app.logger.info(dataset)
 
-        check_dataset_constraints(dataset, method='PUT')
+        check_dataset_constraints(dataset, method='PATCH')
         check_topic_allocated(topic_name)
+
+
         chain(
             update_topic_task.signature(),
             nlp4sk_topic_task.signature(),
             train_pipeline_task.signature(),
             evaluate_model_task.signature(),
             send_confirmation_email_task.signature()
-        ).delay(dataset.to_json(orient='records'), {
-            'topic_name': topic_name,
-            'mailto': mailto
-        })
+        ).delay(
+            dataset.to_json(orient='records'), 
+            {
+                'topic_name': topic_name,
+                'mailto': mailto
+            }
+        )
 
         return {
-            'message': 'update accepted, request is being handled'
+            'message': 'update accepted, request is being handled',
+            'success': True
         }, 202
 
 @workflows_bp.route('/api/v1/topics/limit', methods=['GET'])

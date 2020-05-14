@@ -2,6 +2,7 @@ from app import celery
 from app.machine_learning.train import train_pipe
 from app.config import config
 import pandas as pd
+import numpy as np
 from app.models import Topic, Document, Tag, db
 from celery.utils.log import get_task_logger
 from app.machine_learning.preprocessing import NLP4SKPreprocesser
@@ -53,6 +54,7 @@ def send_confirmation_email_task(params):
 
     return params
 
+
 @celery.task()
 def evaluate_model_task(params):
 
@@ -71,11 +73,13 @@ def evaluate_model_task(params):
                     Tag.label.label('tag')
                 ]
             )
+        
 
         df = pd.DataFrame(matching_documents)
         df = df[df['updated_sentence'].notna()]
-        
-        result = evaluate(df)
+
+        logger.info(df)
+        result = evaluate(df.drop(columns=['tag']), df.tag)
         topic = Topic.query.get(topic_id)
         topic.f1_macro = result['f1_macro']
         topic.f1_weighted = result['f1_weighted']
@@ -112,7 +116,8 @@ def train_pipeline_task(params):
     topic = Topic.query\
         .get(topic_id)
 
-    topic.pipeline = train_pipe(df.drop(columns=['tag']), df.tag, limit=config['limit_tag_size'])
+    topic.pipeline = train_pipe(
+        df.drop(columns=['tag']), df.tag, limit=config['limit_tag_size'])
 
     db.session.commit()
     return params
@@ -127,7 +132,7 @@ def nlp4sk_topic_task(params):
         .query\
         .join(Document)\
         .filter(Tag.topic_id == topic_id)\
-        .filter(Document.updated_sentence == None)\
+        .filter( Document.updated_sentence == None)\
         .with_entities(
             Document.sentence,
             Document.id
@@ -138,6 +143,8 @@ def nlp4sk_topic_task(params):
         lambda x: x._asdict(),
         matching_documents
     ))
+
+    # logger.info(matching_documents)
 
     nlp4sk = NLP4SKPreprocesser('sentence')
 
@@ -163,7 +170,7 @@ def create_topic_task(df, params):
     name = params['topic_name']
     desc = params['topic_desc']
 
-    df = pd.read_json(df)
+    df = pd.read_json(df).drop_duplicates(subset='sentence')
 
     unique_tags = list(df.tag.unique())
 
@@ -193,7 +200,7 @@ def create_topic_task(df, params):
                     str(x.parent_tag),
                     int(x.likes)
                 ), axis=1
-            )
+        )
 
     db.session.add(topic)
     db.session.commit()
@@ -206,7 +213,8 @@ def create_topic_task(df, params):
 
 @celery.task()
 def update_topic_task(df: pd.DataFrame, params):
-    df = pd.read_json(df)
+
+    df = pd.read_json(df).drop_duplicates(subset='sentence')
 
     topic_name = params['topic_name']
 
@@ -214,25 +222,57 @@ def update_topic_task(df: pd.DataFrame, params):
         .filter(Topic.name == topic_name)\
         .first()
 
-    original = topic.tags
+    original =  topic.tags
     new_tags = list(df.tag.unique())
 
-    for tag in [x for x in new_tags if x in original]:
-        matching_documents = df[df.tag == tag.label]
+    original_labels = map(lambda x: x.label, original)
 
-        tag.documents.extend(
-            matching_documents.apply(
-                lambda x: Document(
-                    x.sentence,
-                    None,
-                    x.sentiment_percentage,
-                    x.post_id,
-                    x.parent_tag,
-                    x.likes
-                ),
-                axis=1
-            )
+    for label in [x for x in new_tags if x in original_labels]:
+        matching_documents = df[df.tag == label]
+        matching_documents['updated_sentence'] = None
+
+        # logger.info(matching_documents.updated_sentence)
+
+        tag = [x for x in original if x.label == label][0]
+
+        old_documents = Tag.query\
+            .join(Document)\
+            .filter(Tag.id == tag.id)\
+            .with_entities(
+                Document.sentence,
+                Document.updated_sentence,
+                Document.sentiment_percentage,
+                Document.post_id,
+                Document.parent_tag,
+                Document.likes
+            )\
+            .all()
+
+
+        old_documents = pd.DataFrame(map(
+            lambda x: x._asdict(),
+            old_documents
+        ))
+
+        all_documents = pd.concat(
+            [old_documents,matching_documents],
+            ignore_index=True
+        ).drop_duplicates(subset='sentence')
+
+
+
+        tag.documents = all_documents.apply(
+            lambda x: Document(
+                x.sentence,
+                x.updated_sentence,
+                x.sentiment_percentage,
+                x.post_id,
+                x.parent_tag,
+                x.likes
+            ),
+            axis=1
         )
+        
 
     topic.updated = False
     db.session.commit()

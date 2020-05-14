@@ -1,6 +1,6 @@
 class TagBalancer():
     
-    def __init__(self, limit):
+    def __init__(self, limit=20):
         self.__limit = limit
         # self.__default_tag = default_tag
     

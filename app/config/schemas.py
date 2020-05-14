@@ -49,7 +49,10 @@ create_topic_schema = {
             'type': 'string'
         },
         'mailto': {
-            'type': 'string',
+            "anyOf": [
+                {"type": "string"},
+                {"type": "null"}
+            ],
             'pattern': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$'
 
         },
@@ -70,8 +73,8 @@ create_topic_schema = {
                     },
                     'parent_tag': {
                         "anyOf": [
-                            { "type": "string" },
-                            { "type": "null" }
+                            {"type": "string"},
+                            {"type": "null"}
                         ],
                     },
                     'tag': {'type': 'string'}
@@ -86,7 +89,10 @@ update_topic_schema = {
     'properties': {
         'name': {'type': 'string'},
         'mailto': {
-            'type': 'string',
+            "anyOf": [
+                {"type": "string"},
+                {"type": "null"}
+            ],
             'pattern': "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
         },
         'dataset': {
@@ -103,7 +109,12 @@ update_topic_schema = {
                         'enum': [0, 1],
                         'default': 0
                     },
-                    'parent_tag': {'type': 'string'},
+                    'parent_tag': {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "null"}
+                        ],
+                    },
                     'tag': {'type': 'string'}
                 }
             }
